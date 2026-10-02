@@ -27,11 +27,11 @@
    "code": "M3CHAT",
    "title": "Chat as a list, always on",
    "notes": "The chat at the bottom left is a plain list of up to 8 messages that works alive, dead, spectating and in the drone and scope views; on the host, dead players' chat reaches everyone.",
-   "_status": "chat-list v3 (Experimental x38). Replaces the whole exe; built on main's SMOKE exe md5 0f1b2d1c. Result md5 3fba79cf.",
+   "_status": "chat-list v3 on main 2026.10.02-4 (m3): replaces the whole exe over SMOKE; built on -4's SMOKE exe md5 4a17634f (0f1b2d1c + door carry). Result md5 0fd28e5f = v3 3fba79cf with door carry's 239 bytes laid on; gates static 76/76, harness 157/157, plugin sites pass (Deploy\\chat-list\\build\\gates\\m4). m1/m2 shipped 3fba79cf on 0f1b2d1c.",
    "files": [
     {
      "install_path": "System/SCDA_Online.exe",
-     "source": "sources/SCDA_Online.exe.chatlist3",
+     "source": "sources/SCDA_Online.exe.chatlist3.m4",
      "force_full": true,
      "over": "SMOKE"
     }
@@ -57,14 +57,9 @@
    "kind": "files",
    "code": "M3SNHS",
    "title": "Sniper headshot sound",
-   "notes": "When a merc kills a spy with a scoped headshot, a short ding plays where the spy fell, heard within 10 metres. The host needs the plugin; every player needs the sound bank.",
-   "_status": "sniper-headshot-sound v2 (Experimental x39). MAPS.SM0 md5 e681dfbd made from stock d8e31526, shipped as a delta; SniperHeadshotSound.asi md5 9e9dcfc0.",
+   "notes": "When a merc kills a spy with a scoped headshot, a short ding plays where the spy fell, heard within 10 metres. The host needs the plugin; the ding itself is in Community Edition's own sound bank (MAPS.SM0 of Club House and Warehouse, since 2026.10.02-3).",
+   "_status": "sniper-headshot-sound v3 (m3): the plugin only, SniperHeadshotSound.asi md5 9e9dcfc0. The Ding sample and its 10 m range ride in main's CLUBEX MAPS.SM0 (f6f129b7 in 2026.10.02-3: turret cue sample = the Ding, parameter 7 = 10.0), so this channel ships and replaces no bank. v2 (m1, m2) shipped MAPS.SM0 e681dfbd as a delta on stock d8e31526.",
    "files": [
-    {
-     "install_path": "Packages/_Common/SoundsDARE/MAPS.SM0",
-     "source": "sources/MAPS.snhs2.SM0",
-     "base": "Packages/_Common/SoundsDARE/MAPS.SM0"
-    },
     {
      "install_path": "System/SniperHeadshotSound.asi",
      "source": "sources/SniperHeadshotSound.v2.asi",

@@ -13,17 +13,17 @@ M3eptemp is a separate copy of SYNCADE's SCDA Launcher 3.19 with one more versio
 
 ## What it changes
 
-Version `2026.10.02-m2`, on top of Community Edition:
+Version `2026.10.02-m3`, on top of Community Edition 2026.10.02-4:
 
 | Code | Feature | What it does | Files |
 | --- | --- | --- | --- |
-| `M3CHAT` | Chat as a list, always on | The chat at the bottom left is a plain list of up to 8 messages that works alive, dead, spectating and in the drone and scope views; on the host, dead players' chat reaches everyone. | `System\SCDA_Online.exe` (replaced) |
+| `M3CHAT` | Chat as a list, always on | The chat at the bottom left is a plain list of up to 8 messages that works alive, dead, spectating and in the drone and scope views; on the host, dead players' chat reaches everyone. | `System\SCDA_Online.exe` (replaced, while this is on; built on Community Edition 2026.10.02-4's exe, so the Club House lift fix stays) |
 | `M3QHUD` | HUD stays on in the drone and the scope | A merc looking through the scope or flying the drone keeps the normal HUD (timer, zone name, score, gadgets, messages), drawn on top of the view. | `System\QolHud.asi` (added) |
-| `M3SNHS` | Sniper headshot sound | When a merc kills a spy with a scoped headshot, a short ding plays where the spy fell, heard within 10 metres. | `Packages\_Common\SoundsDARE\MAPS.SM0` (replaced), `System\SniperHeadshotSound.asi` (added) |
+| `M3SNHS` | Sniper headshot sound | When a merc kills a spy with a scoped headshot, a short ding plays where the spy fell, heard within 10 metres. | `System\SniperHeadshotSound.asi` (added). The ding itself is already in Community Edition's own `MAPS.SM0` (since 2026.10.02-3), so nothing is replaced |
 | `M3SGRB` | Spy grab: end of the spin, wall stagger and stairs | A spy can grab a merc in the last half second of the berserk spin, during the whole stagger after a wall sprint, and on stairs. | `System\SpyGrab.asi`, `System\SpyGrab.ini` (added) |
 | `M3NECK` | QOL4Necks | A spy can neck a merc in the middle of a jump and right after he lands, and an interact press next to a light switch or other object necks a merc in reach first. | `System\QOL4Necks.asi`, `System\QOL4Necks.ini` (added) |
 
-**Known issue in m2:** on Community Edition 2026.10.02-3 and later the launcher holds the sniper headshot sound back, because Club House and Warehouse now ship `MAPS.SM0` themselves. The other four install. The next build fixes this: Community Edition's own `MAPS.SM0` already carries the ding, so `M3SNHS` becomes the plugin alone.
+m2 held the sniper headshot sound back on Community Edition 2026.10.02-3 and later (it shipped its own `MAPS.SM0`, which Club House and Warehouse now own). m3 ships the plugin alone and installs all five.
 
 Each feature's own change log, as its builder wrote it, is in [`features/`](features/) (`README.md`, and `FINDINGS.md` where there is one). Paths in those files point into the builder's workspace, not into this repository.
 

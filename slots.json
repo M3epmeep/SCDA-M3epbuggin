@@ -1,6 +1,6 @@
 {
  "_comment": [
-  "CLAIMS COPY of the main catalogue (slots.json), written by `python m3ep.py claims`.",
+  "CLAIMS COPY of the main catalogue (slots-main-4.json), written by `python m3ep.py claims`.",
   "It holds only what make_release.py reads from another channel's catalogue: its add-on codes,",
   "map IDs, menu keys, install paths and overrides (the cross-channel checks), and on main the",
   "stock-file table this channel inherits. Comments and source paths are left out. Never built:",
@@ -123,6 +123,166 @@
     },
     {
      "install_path": "System/RollFix.asi",
+     "force_full": true
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "VOICE",
+   "title": "Proximity voice chat (push-to-talk)",
+   "files": [
+    {
+     "install_path": "System/ProxVoice.asi",
+     "force_full": true
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "code": "CLUBE",
+   "title": "Club House (beta)",
+   "map_id": 21,
+   "title_key": "11",
+   "after": null,
+   "sound_occ": "own",
+   "extra_files": [
+    {
+     "install_path": "Packages/_Common/StaticMeshes/CLUBE_STM.usx"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/CLUBE_TXT.utx"
+    },
+    {
+     "install_path": "Packages/_Common/Sounds/CLUBE_SND.uax"
+    },
+    {
+     "install_path": "Packages/_Common/Animations/Kit_Boat.ukx"
+    },
+    {
+     "install_path": "Packages/_Common/Animations/Kit_Boat.evtscript"
+    },
+    {
+     "install_path": "Packages/_Common/Animations/Kit_Boat.evtsound"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/SHP2_obj_Ancre.utx"
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "code": "WAREH",
+   "title": "Warehouse (beta)",
+   "map_id": 22,
+   "title_key": "12",
+   "after": null,
+   "sound_occ": "own",
+   "extra_files": [
+    {
+     "install_path": "Packages/_Common/StaticMeshes/WAREH_STM.usx"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/WAREH_TXT.utx"
+    },
+    {
+     "install_path": "Packages/_Common/StaticMeshes/WAREH_OBJ.usx"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/WAREH_OBJ_TXT.utx"
+    },
+    {
+     "install_path": "Packages/_Common/StaticMeshes/WAREH_HUD.usx"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/WAREH_HUD_TXT.utx"
+    },
+    {
+     "install_path": "Packages/_Common/Sounds/WAREH_SND.uax"
+    },
+    {
+     "install_path": "Packages/_Common/Animations/calendar.ukx"
+    },
+    {
+     "install_path": "Packages/_Common/Animations/calendar.evtscript"
+    },
+    {
+     "install_path": "Packages/_Common/Animations/calendar.evtsound"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/shp2_glissiere.utx"
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "CLUBEX",
+   "title": "Club House and Warehouse -- sound banks, steam vents and zone names",
+   "files": [
+    {
+     "install_path": "Packages/_Common/SoundsDARE/MAPS.SM0",
+     "base": "Packages/_Common/SoundsDARE/MAPS.SM0"
+    },
+    {
+     "install_path": "Packages/_Common/SoundsDARE/STREAM.SS0",
+     "base": "Packages/_Common/SoundsDARE/STREAM.SS0"
+    },
+    {
+     "install_path": "Packages/_Common/SoundsDARE/eng/MAPS.LM0",
+     "base": "Packages/_Common/SoundsDARE/eng/MAPS.LM0"
+    },
+    {
+     "install_path": "Packages/_Common/Texts/HUD_Text.ute",
+     "base": "Packages/_Common/Texts/HUD_Text.ute"
+    },
+    {
+     "install_path": "System/VentChain.asi",
+     "force_full": true
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "MAPOBJ",
+   "title": "Map objectives -- laptops, gates and bomb sites in every mode",
+   "files": [
+    {
+     "install_path": "System/Modes.asi",
+     "force_full": true
+    },
+    {
+     "install_path": "System/ObjHack.asi",
+     "force_full": true
+    },
+    {
+     "install_path": "System/Modes.ini",
+     "force_full": true
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "SPAWNT",
+   "title": "Spawn protection lobby switch",
+   "files": [
+    {
+     "install_path": "System/SpawnProt.asi",
+     "force_full": true
+    },
+    {
+     "install_path": "Packages/_Common/Menus/SC4_LOBBIES.mpd",
+     "force_full": true
+    },
+    {
+     "install_path": "Packages/_Common/Texts/SCDA_Text.ute",
+     "force_full": true
+    },
+    {
+     "install_path": "Packages/_Common/Texts/ENG/SCDA_Text.eng",
      "force_full": true
     }
    ]
