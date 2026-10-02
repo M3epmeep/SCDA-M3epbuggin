@@ -1,0 +1,5 @@
+/sources/
+/stock/
+/dist/
+__pycache__/
+*.tmp

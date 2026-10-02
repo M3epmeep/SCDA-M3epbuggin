@@ -1,0 +1,131 @@
+{
+ "_comment": [
+  "CLAIMS COPY of the main catalogue (slots.json), written by `python m3ep.py claims`.",
+  "It holds only what make_release.py reads from another channel's catalogue: its add-on codes,",
+  "map IDs, menu keys, install paths and overrides (the cross-channel checks), and on main the",
+  "stock-file table this channel inherits. Comments and source paths are left out. Never built:",
+  "it is locked, and the files it once named are not here."
+ ],
+ "track": "main",
+ "name": "SCDA Community Edition -- map add-ons and game changes",
+ "install_root": "",
+ "voice_server": "",
+ "mcd_donor": {
+  "code": "BOSG2",
+  "path": "stock/Packages/_Common/MapDescriptions/PKG_BOSG2_Desc.mcd"
+ },
+ "sound_occ_stub": "sources/empty_sound.occ",
+ "baseline_sources": {
+  "System/SCDA_Online.exe": "stock/System/SCDA_Online.exe",
+  "Packages/_Common/MapsPC/BLKG1_VS.sds": "stock/Packages/_Common/MapsPC/BLKG1_VS.sds",
+  "Packages/_Common/MapsPC/BOSG2_VS.sds": "stock/Packages/_Common/MapsPC/BOSG2_VS.sds",
+  "Packages/_Common/Textures/SC4_Perso_Weapon.utx": "stock/Packages/_Common/Textures/SC4_Perso_Weapon.utx",
+  "Packages/_Common/MapsPC/MOTG4_VS.sds": "stock/Packages/_Common/MapsPC/MOTG4_VS.sds",
+  "Packages/_Common/MapsPC/SLHG7_VS.sds": "stock/Packages/_Common/MapsPC/SLHG7_VS.sds",
+  "Packages/_Common/StaticMeshes/IND08_STM.usx": "stock/Packages/_Common/StaticMeshes/IND08_STM.usx",
+  "Packages/_Common/MapDescriptions/PKG_BOSG2_Desc.mcd": "stock/Packages/_Common/MapDescriptions/PKG_BOSG2_Desc.mcd",
+  "Packages/_Common/Animations/SC4_PERSO.ukx": "stock/Packages/_Common/Animations/SC4_PERSO.ukx",
+  "Packages/_Common/Textures/IND08_TXT.utx": "stock/Packages/_Common/Textures/IND08_TXT.utx",
+  "Packages/_Common/SoundsDARE/MAPS.SM0": "stock/Packages/_Common/SoundsDARE/MAPS.SM0",
+  "Packages/_Common/SoundsDARE/STREAM.SS0": "stock/Packages/_Common/SoundsDARE/STREAM.SS0",
+  "Packages/_Common/SoundsDARE/eng/MAPS.LM0": "stock/Packages/_Common/SoundsDARE/eng/MAPS.LM0",
+  "Packages/_Common/Texts/HUD_Text.ute": "stock/Packages/_Common/Texts/HUD_Text.ute"
+ },
+ "locked": true,
+ "locked_because": "A claims copy: the cross-channel checks read it; it is never built from here.",
+ "addons": [
+  {
+   "enabled": true,
+   "code": "KIN01",
+   "title": "Kinshasa",
+   "map_id": 8,
+   "title_key": "09",
+   "after": null,
+   "sound_occ": "own",
+   "extra_files": [
+    {
+     "install_path": "Packages/_Common/StaticMeshes/KIN01_STM.usx"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/KIN01_TXT.utx"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/SND_KIN01_TXT.bsm"
+    },
+    {
+     "install_path": "Packages/_Common/UVTransforms/KIN01_TXT_OSC.uvt"
+    },
+    {
+     "install_path": "Packages/_Common/Texts/DLC_Text.ute"
+    },
+    {
+     "install_path": "Packages/_Common/Animations/plateaux.ukx"
+    },
+    {
+     "install_path": "Packages/_Common/Animations/plateaux.evtscript"
+    },
+    {
+     "install_path": "Packages/_Common/Animations/plateaux.evtsound"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/SHP2_obj_Baril.utx"
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "code": "NSA01",
+   "title": "Secret Base",
+   "map_id": 9,
+   "title_key": "10",
+   "after": null,
+   "sound_occ": "none",
+   "extra_files": [
+    {
+     "install_path": "Packages/_Common/StaticMeshes/NSA01_STM.usx"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/NSA01_TXT.utx"
+    },
+    {
+     "install_path": "Packages/_Common/Textures/SND_NSA01_TXT.bsm"
+    },
+    {
+     "install_path": "Packages/_Common/UVTransforms/NSA01_BSP_UVtrans.uvt"
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "SMOKE",
+   "title": "Smoke mines, spawn protection, frag blast, merc jump, flashbang sight and roll fix",
+   "files": [
+    {
+     "install_path": "System/SCDA_Online.exe",
+     "base": "System/SCDA_Online.exe"
+    },
+    {
+     "install_path": "System/PC/SC4Inventory.u",
+     "force_full": true
+    },
+    {
+     "install_path": "System/PC/SC4Specific.u",
+     "force_full": true
+    },
+    {
+     "install_path": "Packages/_Common/Texts/ENG/HUD_text.eng",
+     "force_full": true
+    },
+    {
+     "install_path": "System/SC4Specific.ini",
+     "force_full": true
+    },
+    {
+     "install_path": "System/RollFix.asi",
+     "force_full": true
+    }
+   ]
+  }
+ ]
+}

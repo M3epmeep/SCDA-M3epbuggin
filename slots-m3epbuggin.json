@@ -1,0 +1,116 @@
+{
+ "_comment": [
+  "THE M3EPBUGGIN CHANNEL -- the operator's test version: Community Edition plus the",
+  "community-mods test features, each one a `files` add-on. Players pick M3epbuggin in the",
+  "modified launcher; it switches on main + this channel.",
+  "",
+  "Every file is measured against Community Edition 2026.09.28-1: a delta from the stock",
+  "bytes where the game ships the file and nobody edits it (MAPS.SM0), whole otherwise",
+  "(new plugins, their .ini). The exe is main's SMOKE file, so M3CHAT ships it whole with",
+  "\"over\": \"SMOKE\", the form Experimental's DEVBLD uses: a launcher puts SMOKE's exe back",
+  "when M3CHAT goes off.",
+  "",
+  "Experimental ships some of the same paths (the exe, MAPS.SM0, SpyGrab.asi/.ini,",
+  "SniperHeadshotSound.asi, QolHud.asi). The two channels are never live together, so the",
+  "build reports those files instead of refusing them; an install must hold the add-ons of",
+  "only one of the two (README.md: remove Experimental's first)."
+ ],
+ "track": "m3epbuggin",
+ "name": "SCDA Community Edition -- M3epbuggin test build",
+ "inherit": "slots.json",
+ "voice_server": null,
+ "bundle_url_template": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/{tag}/{bundle}",
+ "addons": [
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "M3CHAT",
+   "title": "Chat as a list, always on",
+   "notes": "The chat at the bottom left is a plain list of up to 8 messages that works alive, dead, spectating and in the drone and scope views; on the host, dead players' chat reaches everyone.",
+   "_status": "chat-list v3 (Experimental x38). Replaces the whole exe; built on main's SMOKE exe md5 0f1b2d1c. Result md5 3fba79cf.",
+   "files": [
+    {
+     "install_path": "System/SCDA_Online.exe",
+     "source": "sources/SCDA_Online.exe.chatlist3",
+     "force_full": true,
+     "over": "SMOKE"
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "M3QHUD",
+   "title": "HUD stays on in the drone and the scope",
+   "notes": "A merc looking through the scope or flying the drone keeps the normal HUD (timer, zone name, score, gadgets, messages), drawn on top of the view.",
+   "_status": "qol-hud v3 (QolHud.asi md5 722365f7). Adds one plugin, replaces nothing; settings optional in Enhanced.ini [QOLHUD].",
+   "files": [
+    {
+     "install_path": "System/QolHud.asi",
+     "source": "sources/QolHud.v3.asi",
+     "force_full": true
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "M3SNHS",
+   "title": "Sniper headshot sound",
+   "notes": "When a merc kills a spy with a scoped headshot, a short ding plays where the spy fell, heard within 10 metres. The host needs the plugin; every player needs the sound bank.",
+   "_status": "sniper-headshot-sound v2 (Experimental x39). MAPS.SM0 md5 e681dfbd made from stock d8e31526, shipped as a delta; SniperHeadshotSound.asi md5 9e9dcfc0.",
+   "files": [
+    {
+     "install_path": "Packages/_Common/SoundsDARE/MAPS.SM0",
+     "source": "sources/MAPS.snhs2.SM0",
+     "base": "Packages/_Common/SoundsDARE/MAPS.SM0"
+    },
+    {
+     "install_path": "System/SniperHeadshotSound.asi",
+     "source": "sources/SniperHeadshotSound.v2.asi",
+     "force_full": true
+    }
+   ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "M3SGRB",
+   "title": "Spy grab -- end of the spin, wall stagger and stairs",
+   "notes": "A spy can grab a merc in the last half second of the berserk spin, during the whole stagger after a wall sprint, and on stairs. Every player needs it.",
+   "_status": "spy-grab-merc v2 (Experimental x40). SpyGrab.asi md5 ca67503e, SpyGrab.ini md5 36c34fa4.",
+   "files": [
+    {
+     "install_path": "System/SpyGrab.asi",
+     "source": "sources/SpyGrab.v2.asi",
+     "force_full": true
+    },
+    {
+     "install_path": "System/SpyGrab.ini",
+     "source": "sources/SpyGrab.v2.ini",
+     "force_full": true
+    }
+   ]
+  },
+  {
+   "enabled": false,
+   "kind": "files",
+   "code": "M3NECK",
+   "title": "QOL4Necks -- neck a jumping or landing merc, neck before switches",
+   "notes": "A spy can neck a merc in the middle of a jump and right after he lands, and an interact press next to a light switch or other object necks a merc in reach first.",
+   "_disabled": "Off until the qol4necks plugin is built: QOL4Necks.asi did not exist yet when 2026.10.02-m1 was built. To ship it: python m3ep.py add <QOL4Necks.asi> --as QOL4Necks.asi, the same for the .ini, set enabled true, build and publish the next version.",
+   "files": [
+    {
+     "install_path": "System/QOL4Necks.asi",
+     "source": "sources/QOL4Necks.asi",
+     "force_full": true
+    },
+    {
+     "install_path": "System/QOL4Necks.ini",
+     "source": "sources/QOL4Necks.ini",
+     "force_full": true
+    }
+   ]
+  }
+ ]
+}

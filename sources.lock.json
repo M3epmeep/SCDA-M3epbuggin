@@ -1,0 +1,37 @@
+{
+ "_comment": "Every file under sources/ and stock/ that the catalogue names, by sha256. The bytes live as assets of the 'sources' release, named by their sha256. Written by `python m3ep.py add`; read by `python m3ep.py fetch`, `upload` and `check`.",
+ "files": {
+  "sources/MAPS.snhs2.SM0": {
+   "sha256": "856c13d2f2d9cafa2fbeaefa62ce8ba1d0c83b9a697bab5996037189bfe52d89",
+   "size": 182933888
+  },
+  "sources/QolHud.v3.asi": {
+   "sha256": "5e5fbaea6aa2a872776550ef5fdcc222e823dc19bd5875c03690c6a4380046c0",
+   "size": 20992
+  },
+  "sources/SCDA_Online.exe.chatlist3": {
+   "sha256": "fc1e301e7bf17f7d8d88a4b961afaee55dc380bd3e71b383cd0cd55a0bf92ad4",
+   "size": 7725056
+  },
+  "sources/SniperHeadshotSound.v2.asi": {
+   "sha256": "2d1d5f85f8ba886d619ee5314fac6e6cd0f5a481d23702b34da924d0cd31e285",
+   "size": 8704
+  },
+  "sources/SpyGrab.v2.asi": {
+   "sha256": "0815854d351081779682f4623adb6c0145ad7c90f75c45c49e635f7c8a58577c",
+   "size": 12800
+  },
+  "sources/SpyGrab.v2.ini": {
+   "sha256": "1476a7850ae57a10a2628d9c81e900fc7b73cffecad70a8552de5520de5cfb0f",
+   "size": 654
+  },
+  "stock/Packages/_Common/SoundsDARE/MAPS.SM0": {
+   "sha256": "bf17bfedbd97811b2f4bbb232ab4328e4ef9f2a75328f64021c6caddb7bf05cb",
+   "size": 182933888
+  },
+  "stock/System/SCDA_Online.exe": {
+   "sha256": "ee80d2355f7fcc8cbfbd8e7bcb52cab26a9e2947ff00ef830feb2bc8289b54a5",
+   "size": 7712768
+  }
+ }
+}
