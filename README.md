@@ -1,10 +1,19 @@
 # SCDA M3epbuggin
 
-**M3epbuggin** is M3epmeep's test version of SCDA (Splinter Cell: Double Agent, PC Community Edition): Community Edition plus the community-mods features that are being tried. It is a channel of the SCDA Launcher: players pick *M3epbuggin* in the modified `ScdaLauncher.exe` and press PLAY. This repository holds that channel: the catalogue, the build tool, the published `latest.json` and the release bundles. The base game itself still comes from the Community Edition image; this channel ships only the differences.
+**M3epbuggin** is M3epmeep's test version of SCDA (Splinter Cell: Double Agent, PC Community Edition): Community Edition plus the community-mods features that are being tried. Players get it with the **M3eptemp** launcher: pick *M3epbuggin* and press PLAY. This repository holds that channel: the catalogue, the build tool, the published `latest.json` and the release bundles. The base game itself still comes from the Community Edition image; this channel ships only the differences.
+
+## Download the launcher
+
+**[M3eptemp 3.19.20261002](https://github.com/M3epmeep/SCDA-M3epbuggin/releases/tag/m3eptemp-v3.19.20261002)** (its own release in this repository):
+
+- [`M3eptemp.exe`](https://github.com/M3epmeep/SCDA-M3epbuggin/releases/latest/download/M3eptemp.exe): the launcher window
+- [`M3eptemp-cli.exe`](https://github.com/M3epmeep/SCDA-M3epbuggin/releases/latest/download/M3eptemp-cli.exe): the same launcher on the command line
+
+M3eptemp is a separate copy of SYNCADE's SCDA Launcher 3.19 with one more version in its list, *M3epbuggin*. It never updates itself and keeps its settings, log and downloads in its own folder, `%LOCALAPPDATA%\M3eptemp`, so the official launcher keeps working as before. The exes are not code-signed; the release page lists their SHA-256.
 
 ## What it changes
 
-Version `2026.10.02-m1`, on top of Community Edition 2026.09.28-1:
+Version `2026.10.02-m2`, on top of Community Edition:
 
 | Code | Feature | What it does | Files |
 | --- | --- | --- | --- |
@@ -12,29 +21,26 @@ Version `2026.10.02-m1`, on top of Community Edition 2026.09.28-1:
 | `M3QHUD` | HUD stays on in the drone and the scope | A merc looking through the scope or flying the drone keeps the normal HUD (timer, zone name, score, gadgets, messages), drawn on top of the view. | `System\QolHud.asi` (added) |
 | `M3SNHS` | Sniper headshot sound | When a merc kills a spy with a scoped headshot, a short ding plays where the spy fell, heard within 10 metres. | `Packages\_Common\SoundsDARE\MAPS.SM0` (replaced), `System\SniperHeadshotSound.asi` (added) |
 | `M3SGRB` | Spy grab: end of the spin, wall stagger and stairs | A spy can grab a merc in the last half second of the berserk spin, during the whole stagger after a wall sprint, and on stairs. | `System\SpyGrab.asi`, `System\SpyGrab.ini` (added) |
-| `M3NECK` | QOL4Necks (not in this version yet) | A spy can neck a merc in the middle of a jump and right after he lands, and an interact press next to a light switch or other object necks a merc in reach first. | `System\QOL4Necks.asi`, `System\QOL4Necks.ini` (added); switched on in a later version once the plugin is built |
+| `M3NECK` | QOL4Necks | A spy can neck a merc in the middle of a jump and right after he lands, and an interact press next to a light switch or other object necks a merc in reach first. | `System\QOL4Necks.asi`, `System\QOL4Necks.ini` (added) |
+
+**Known issue in m2:** on Community Edition 2026.10.02-3 and later the launcher holds the sniper headshot sound back, because Club House and Warehouse now ship `MAPS.SM0` themselves. The other four install. The next build fixes this: Community Edition's own `MAPS.SM0` already carries the ding, so `M3SNHS` becomes the plugin alone.
 
 Each feature's own change log, as its builder wrote it, is in [`features/`](features/) (`README.md`, and `FINDINGS.md` where there is one). Paths in those files point into the builder's workspace, not into this repository.
 
 ## How a player gets it
 
-1. Download `ScdaLauncher.exe` from the newest `launcher-v...` release of this repository. It is the official SCDA Launcher with one more version in its list, *M3epbuggin*, and it updates itself from this repository only.
-2. Start it, pick **M3epbuggin**, press **PLAY**. The launcher brings Community Edition up to date, then installs this channel's add-ons, checks the game files and starts the game. A player with no game gets the whole Community Edition first.
+1. Download `M3eptemp.exe` (above) and start it.
+2. Give it a game folder of its own. Press **PLAY** and let it download Community Edition into a new folder you pick, or open **Settings -> Game folder -> Browse** and choose a Community Edition copy that no other launcher looks after. M3eptemp keeps its own records of the files it installs, so it should not share a folder with the official launcher.
+3. Under VERSION pick **M3epbuggin** and press **PLAY**. The launcher brings Community Edition up to date, then installs this channel's add-ons, checks the game files and starts the game.
 
-**Every player in a match needs it.** Most of it works across the network: the spy grab needs the file on the host (who grants the grab) and on the spy's machine (which shows the prompt), the headshot ding is sent by the host's plugin and played from every player's own sound bank (an old bank plays a short machine noise instead), and dead players' chat goes out from the host's exe. Only the HUD change is purely on your own screen.
+**Every player in a match needs it.** Most of it works across the network: the spy grab needs the file on the host (who grants the grab) and on the spy's machine (which shows the prompt), the headshot ding is sent by the host's plugin and played from every player's own sound bank, and dead players' chat goes out from the host's exe. Only the HUD change is purely on your own screen.
 
-**If you have used Experimental Build on this install**, take its add-ons out before you pick M3epbuggin. Experimental ships several of the same files (`SCDA_Online.exe`, `MAPS.SM0`, `SpyGrab.asi` / `.ini`, `SniperHeadshotSound.asi`, `QolHud.asi`), and the launcher lets only one installed add-on own a file. With `ScdaLauncher-cli.exe`, the console twin of the modified launcher (in the same `launcher-v...` release):
-
-```
-ScdaLauncher-cli.exe --cli remove-track --track experimental
-```
-
-This removes every Experimental add-on and puts your original files back; Community Edition's own add-ons stay.
+**Your key bindings are shared.** Every SCDA install reads the same player profiles. Like the official launcher 3.19, M3eptemp adds the bindings an add-on needs (for example push-to-talk) and removes the bindings of retired add-ons (`CoopMove`, `CoopKey`, `NoLight`) in those profiles.
 
 ## How to go back
 
-- **To Community Edition:** pick *Community Edition* and press PLAY. The launcher switches M3epbuggin's add-ons off and puts Community Edition's files back; the add-ons stay installed, switched off, for the next time you pick M3epbuggin.
-- **To take M3epbuggin out completely** (for example before you pick *Experimental Build*, which ships some of the same files): `ScdaLauncher-cli.exe --cli remove-track --track m3epbuggin`.
+- **To Community Edition:** in M3eptemp pick *Community Edition* and press PLAY. The launcher switches M3epbuggin's add-ons off and puts Community Edition's files back; the add-ons stay installed, switched off, for the next time you pick M3epbuggin.
+- **To take M3epbuggin out completely:** `M3eptemp-cli.exe --cli remove-track --track m3epbuggin --install "<game folder>"`.
 
 ## How a publish reaches players
 
