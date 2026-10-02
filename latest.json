@@ -1,11 +1,11 @@
 {
   "track": "m3epbuggin",
-  "version": "2026.10.02-m1",
-  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.02-m1/scda-ce-m3ep-2026.10.02-m1.scdaupd",
-  "sha256": "d59c85eca124d666afd46c7ae111309dd78fa1497bbd91b4d620f23a1a5d3741",
-  "size": 2983736,
-  "notes": "First M3epbuggin build: chat as a list, HUD in the drone and scope, sniper headshot sound, spy grab on the spin, wall stagger and stairs.",
-  "released": "2026-10-02T15:27:05Z",
+  "version": "2026.10.02-m2",
+  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.02-m2/scda-ce-m3ep-2026.10.02-m2.scdaupd",
+  "sha256": "a83f5bc3922b045dbd6c563c2ae40caae0680528ed872e39cd005c06c3c2bd0d",
+  "size": 2989702,
+  "notes": "QOL4Necks added: a spy can neck a merc in a jump and right after he lands, and an interact press next to a switch or other object necks a merc in reach first.",
+  "released": "2026-10-02T15:47:46Z",
   "addons": [
     {
       "code": "M3CHAT",
@@ -25,6 +25,11 @@
     {
       "code": "M3SGRB",
       "title": "Spy grab -- end of the spin, wall stagger and stairs",
+      "kind": "files"
+    },
+    {
+      "code": "M3NECK",
+      "title": "QOL4Necks -- neck a jumping or landing merc, neck before switches",
       "kind": "files"
     }
   ],
