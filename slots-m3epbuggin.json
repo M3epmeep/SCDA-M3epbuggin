@@ -93,12 +93,11 @@
    ]
   },
   {
-   "enabled": false,
+   "enabled": true,
    "kind": "files",
    "code": "M3NECK",
    "title": "QOL4Necks -- neck a jumping or landing merc, neck before switches",
    "notes": "A spy can neck a merc in the middle of a jump and right after he lands, and an interact press next to a light switch or other object necks a merc in reach first.",
-   "_disabled": "Off until the qol4necks plugin is built: QOL4Necks.asi did not exist yet when 2026.10.02-m1 was built. To ship it: python m3ep.py add <QOL4Necks.asi> --as QOL4Necks.asi, the same for the .ini, set enabled true, build and publish the next version.",
    "files": [
     {
      "install_path": "System/QOL4Necks.asi",

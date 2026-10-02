@@ -5,6 +5,14 @@
    "sha256": "856c13d2f2d9cafa2fbeaefa62ce8ba1d0c83b9a697bab5996037189bfe52d89",
    "size": 182933888
   },
+  "sources/QOL4Necks.asi": {
+   "sha256": "81af5d763b2e348acf48dd3a2398827298722a5882e8f32038235475b98b0bfa",
+   "size": 12800
+  },
+  "sources/QOL4Necks.ini": {
+   "sha256": "2120aed0a740b689335c2be2f2ab180ab18dd446f31bf9df368a04b877bbd97a",
+   "size": 308
+  },
   "sources/QolHud.v3.asi": {
    "sha256": "5e5fbaea6aa2a872776550ef5fdcc222e823dc19bd5875c03690c6a4380046c0",
    "size": 20992
