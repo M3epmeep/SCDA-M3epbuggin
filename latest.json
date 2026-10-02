@@ -1,11 +1,11 @@
 {
   "track": "m3epbuggin",
-  "version": "2026.10.02-m2",
-  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.02-m2/scda-ce-m3ep-2026.10.02-m2.scdaupd",
-  "sha256": "a83f5bc3922b045dbd6c563c2ae40caae0680528ed872e39cd005c06c3c2bd0d",
-  "size": 2989702,
-  "notes": "QOL4Necks added: a spy can neck a merc in a jump and right after he lands, and an interact press next to a switch or other object necks a merc in reach first.",
-  "released": "2026-10-02T15:47:46Z",
+  "version": "2026.10.02-m3",
+  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.02-m3/scda-ce-m3ep-2026.10.02-m3.scdaupd",
+  "sha256": "62e8aea8aabb49df6f8349ef4cdc072e7194b4fe29c871e0cfccda8531b7cc8a",
+  "size": 2964030,
+  "notes": "Sniper headshot sound works again on Community Edition 2026.10.02-3 and later (the ding is in Community Edition's own sound bank, nothing is replaced); the chat list keeps the Club House lift fix of 2026.10.02-4.",
+  "released": "2026-10-02T22:31:07Z",
   "addons": [
     {
       "code": "M3CHAT",
