@@ -1,11 +1,11 @@
 {
   "track": "m3epbuggin",
-  "version": "2026.10.02-m3",
-  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.02-m3/scda-ce-m3ep-2026.10.02-m3.scdaupd",
-  "sha256": "62e8aea8aabb49df6f8349ef4cdc072e7194b4fe29c871e0cfccda8531b7cc8a",
-  "size": 2964030,
-  "notes": "Sniper headshot sound works again on Community Edition 2026.10.02-3 and later (the ding is in Community Edition's own sound bank, nothing is replaced); the chat list keeps the Club House lift fix of 2026.10.02-4.",
-  "released": "2026-10-02T22:31:07Z",
+  "version": "2026.10.05-m4",
+  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.05-m4/scda-ce-m3ep-2026.10.05-m4.scdaupd",
+  "sha256": "9b24b468379f8f899e35b2a9f0d470f170baacce23ec218e1d8b5072cfb17dba",
+  "size": 2966411,
+  "notes": "No-mic fix added: the game starts on a PC without a microphone instead of crashing during start-up (voice send stays off, you still hear the others). On Community Edition 2026.10.02-5; the five other add-ons are unchanged.",
+  "released": "2026-10-05T12:15:19Z",
   "addons": [
     {
       "code": "M3CHAT",
@@ -30,6 +30,11 @@
     {
       "code": "M3NECK",
       "title": "QOL4Necks -- neck a jumping or landing merc, neck before switches",
+      "kind": "files"
+    },
+    {
+      "code": "M3NMIC",
+      "title": "No-mic fix -- the game starts without a microphone",
       "kind": "files"
     }
   ],
