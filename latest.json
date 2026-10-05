@@ -1,11 +1,11 @@
 {
   "track": "m3epbuggin",
-  "version": "2026.10.05-m5",
-  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.05-m5/scda-ce-m3ep-2026.10.05-m5.scdaupd",
-  "sha256": "8c0c5789f417b29d3c36244d3f0f3fe3e441bd598e9e8f7d6f6b7d63b5c33176",
-  "size": 2969426,
-  "notes": "Join crash fix added: a player joining a match no longer crashes while loading in (the HUD now waits for the player's character). On Community Edition 2026.10.02-5; the six other add-ons are unchanged.",
-  "released": "2026-10-05T19:36:50Z",
+  "version": "2026.10.05-m6",
+  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.05-m6/scda-ce-m3ep-2026.10.05-m6.scdaupd",
+  "sha256": "d1f8551f734bbdc51b1a5c405de70de0e602d8d211a29f61a19a3d4e1bd3d782",
+  "size": 2973025,
+  "notes": "Root berzerk added: a merc who sprints into a wall can start the berserk spin at any moment of the stagger (same button, cooldown and rules as the normal spin). On Community Edition 2026.10.02-5; the seven other add-ons are unchanged.",
+  "released": "2026-10-05T20:01:40Z",
   "addons": [
     {
       "code": "M3CHAT",
@@ -40,6 +40,11 @@
     {
       "code": "M3RHUD",
       "title": "Join crash fix -- the HUD waits for your character",
+      "kind": "files"
+    },
+    {
+      "code": "M3RBZK",
+      "title": "Root berzerk -- spin out of the wall stagger",
       "kind": "files"
     }
   ],
