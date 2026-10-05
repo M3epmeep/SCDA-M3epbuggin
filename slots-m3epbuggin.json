@@ -105,6 +105,21 @@
      "force_full": true
     }
    ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "M3NMIC",
+   "title": "No-mic fix -- the game starts without a microphone",
+   "notes": "On a PC with no working microphone the game no longer crashes during start-up (SCDA_Online.exe+37A133). Voice send stays off; hearing the other players keeps working. With a working microphone it does nothing.",
+   "_status": "no-mic-guard (m4): NoMicGuard.asi md5 cc449c0d, three in-memory hooks in the voice init, each byte-checked at load. Gated on CE 2026.10.02-5's SMOKE exe 4a17634f and M3CHAT's 0fd28e5f (105 PASS 0 FAIL, harness 21/21 each); started without a microphone on the test version 2026-10-05: main menu, alive at 90 s.",
+   "files": [
+    {
+     "install_path": "System/NoMicGuard.asi",
+     "source": "sources/NoMicGuard.asi",
+     "force_full": true
+    }
+   ]
   }
  ]
 }
