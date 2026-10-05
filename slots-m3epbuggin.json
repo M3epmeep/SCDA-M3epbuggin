@@ -135,6 +135,26 @@
      "force_full": true
     }
    ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "M3RBZK",
+   "title": "Root berzerk -- spin out of the wall stagger",
+   "notes": "A merc who sprints into a wall can start the berserk spin at any moment of the stagger instead of having the key swallowed until it ends. Same button, same 1.5 s cooldown, same reload and crouch rules as the stock spin. Only the merc's own PC needs it; bots stay stock.",
+   "_status": "root-berzerk v2 (m6): RootBerzerk.asi md5 fa93639a, one in-memory hook of 7 bytes at 0x10BC7A29 (tail of MercWaitForSprintBump.PlayerTick), byte-checked at load; role test RemoteRole != 3 (v1 fdac01a0 had it inverted and never spun). RootBerzerk.ini md5 218858ae (Enabled=1 Bump=0 Log=1). Static gate 121 PASS 0 FAIL and harness 945 checks 0 FAIL on 0fd28e5f, fc237f82, 4a17634f, 0f1b2d1c, 4dccc646; no overlap with the channel's other plugins. Not yet seen running in game.",
+   "files": [
+    {
+     "install_path": "System/RootBerzerk.asi",
+     "source": "sources/RootBerzerk.asi",
+     "force_full": true
+    },
+    {
+     "install_path": "System/RootBerzerk.ini",
+     "source": "sources/RootBerzerk.ini",
+     "force_full": true
+    }
+   ]
   }
  ]
 }

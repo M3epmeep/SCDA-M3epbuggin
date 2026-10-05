@@ -25,6 +25,14 @@
    "sha256": "966105b9a2c55ba07c15ae342b21ddf552ee7c5bcf8dbfafd4f1ec816369754a",
    "size": 7680
   },
+  "sources/RootBerzerk.asi": {
+   "sha256": "55ce838208f857be0506a4e6db14b7268f7876730556a0ace664eef44953bc82",
+   "size": 8704
+  },
+  "sources/RootBerzerk.ini": {
+   "sha256": "e86b3177cb1b62ea4ae8503bde7f0cb7e4faeda1f1c9e37e12f77992da71d058",
+   "size": 116
+  },
   "sources/SCDA_Online.exe.chatlist3": {
    "sha256": "fc1e301e7bf17f7d8d88a4b961afaee55dc380bd3e71b383cd0cd55a0bf92ad4",
    "size": 7725056
