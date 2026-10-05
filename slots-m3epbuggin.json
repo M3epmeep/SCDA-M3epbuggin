@@ -120,6 +120,21 @@
      "force_full": true
     }
    ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "M3RHUD",
+   "title": "Join crash fix -- the HUD waits for your character",
+   "notes": "A player joining a match no longer crashes while loading in (SCDA_Online.exe+271EDA): the game built the HUD before the player's character had arrived. The HUD is now built in the first frame the character exists. When the character is already there it does nothing.",
+   "_status": "two-player-load-crash (m5): ResetHudDefer.asi md5 4e3396c4, two in-memory hooks (HUD builder 0x10B71340 defer, AHUD vtable +0x440 replay), each checked against its stock content at load. Static gate 52 PASS 0 FAIL on 0fd28e5f, fc237f82, 4a17634f, 0f1b2d1c, 4dccc646. Not yet seen running in a two-player game.",
+   "files": [
+    {
+     "install_path": "System/ResetHudDefer.asi",
+     "source": "sources/ResetHudDefer.asi",
+     "force_full": true
+    }
+   ]
   }
  ]
 }

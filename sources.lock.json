@@ -21,6 +21,10 @@
    "sha256": "5e5fbaea6aa2a872776550ef5fdcc222e823dc19bd5875c03690c6a4380046c0",
    "size": 20992
   },
+  "sources/ResetHudDefer.asi": {
+   "sha256": "966105b9a2c55ba07c15ae342b21ddf552ee7c5bcf8dbfafd4f1ec816369754a",
+   "size": 7680
+  },
   "sources/SCDA_Online.exe.chatlist3": {
    "sha256": "fc1e301e7bf17f7d8d88a4b961afaee55dc380bd3e71b383cd0cd55a0bf92ad4",
    "size": 7725056
