@@ -155,6 +155,22 @@
      "force_full": true
     }
    ]
+  },
+  {
+   "enabled": true,
+   "kind": "files",
+   "code": "M3MODF",
+   "title": "Modes crash fix -- no crash while a map loads",
+   "notes": "The game no longer crashes while a map loads (Modes.asi+9F75): Community Edition's Modes.asi kept scanning the game's name list from a background thread for up to 10 minutes and read it while the game was moving it. That scan is skipped; the end-of-round messages still look the names up themselves. Every player benefits on their own PC.",
+   "_status": "modes-name-scan-fix (m7): Community Edition 2026.10.02-5's Modes.asi (MAPOBJ, md5 e5d6f25e) with the install thread's name-retry loop skipped, 2 edits at RVA 0xBF30 / 0xBF42 (8 bytes written, 7 differ, no relocation over them); result md5 f04f5a9d, same size. Gate 8 PASS 0 FAIL. Shipped whole over MAPOBJ, so a launcher puts MAPOBJ's Modes.asi back when M3MODF goes off. Crash measured 2026-10-07 on a joining client loading BLKG1_VS. Not yet seen running in game.",
+   "files": [
+    {
+     "install_path": "System/Modes.asi",
+     "source": "sources/Modes.namescanfix.asi",
+     "force_full": true,
+     "over": "MAPOBJ"
+    }
+   ]
   }
  ]
 }

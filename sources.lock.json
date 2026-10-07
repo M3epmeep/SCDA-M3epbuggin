@@ -5,6 +5,10 @@
    "sha256": "856c13d2f2d9cafa2fbeaefa62ce8ba1d0c83b9a697bab5996037189bfe52d89",
    "size": 182933888
   },
+  "sources/Modes.namescanfix.asi": {
+   "sha256": "91b840c7b0acce03c00e84292069b5267b62797719098f75b05c08da93885e9a",
+   "size": 107520
+  },
   "sources/NoMicGuard.asi": {
    "sha256": "3a3a10d6c565dd8803ad4c6e3093e881046e9c4a81e816e368e8c2b614b2ccc5",
    "size": 12800

@@ -13,7 +13,7 @@ M3eptemp is a separate copy of SYNCADE's SCDA Launcher 3.19 with one more versio
 
 ## What it changes
 
-Version `2026.10.05-m6`, on top of Community Edition 2026.10.02-5:
+Version `2026.10.07-m7`, on top of Community Edition 2026.10.02-5:
 
 | Code | Feature | What it does | Files |
 | --- | --- | --- | --- |
@@ -25,8 +25,9 @@ Version `2026.10.05-m6`, on top of Community Edition 2026.10.02-5:
 | `M3NMIC` | No-mic fix | On a PC with no working microphone the game no longer crashes during start-up. Voice send stays off; you still hear the other players. With a working microphone it does nothing. Only your own PC is affected. | `System\NoMicGuard.asi` (added) |
 | `M3RHUD` | Join crash fix | A player joining a match no longer crashes while loading in: the game built the HUD before the player's character had arrived, and now builds it in the first frame the character exists. With the character already there it does nothing. The joining player needs it. | `System\ResetHudDefer.asi` (added) |
 | `M3RBZK` | Root berzerk | A merc who sprints into a wall can start the berserk spin at any moment of the stagger, instead of the key being swallowed until the stagger ends. Same button, cooldown, reload and crouch rules as the normal spin. Only the merc's own PC needs it; bots stay stock. | `System\RootBerzerk.asi`, `System\RootBerzerk.ini` (added) |
+| `M3MODF` | Modes crash fix | The game no longer crashes while a map loads (`Modes.asi+9F75`). Community Edition's `Modes.asi` scanned the game's name list from a background thread for up to 10 minutes and could read it while the game was moving it; that scan is skipped, and the end-of-round messages still look the names up themselves. Only your own PC is affected. | `System\Modes.asi` (replaced, while this is on; Community Edition's own `Modes.asi` comes back when it is off) |
 
-m2 held the sniper headshot sound back on Community Edition 2026.10.02-3 and later (it shipped its own `MAPS.SM0`, which Club House and Warehouse now own). m3 ships the plugin alone and installs all five. m4 adds the no-mic fix and moves to Community Edition 2026.10.02-5, which changes the launcher only; the five other add-ons are the same files as in m3. m5 adds the join crash fix; the six other add-ons are the same files as in m4. m6 adds root berzerk; the seven other add-ons are the same files as in m5.
+m2 held the sniper headshot sound back on Community Edition 2026.10.02-3 and later (it shipped its own `MAPS.SM0`, which Club House and Warehouse now own). m3 ships the plugin alone and installs all five. m4 adds the no-mic fix and moves to Community Edition 2026.10.02-5, which changes the launcher only; the five other add-ons are the same files as in m3. m5 adds the join crash fix; the six other add-ons are the same files as in m4. m6 adds root berzerk; the seven other add-ons are the same files as in m5. m7 adds the Modes crash fix; the eight other add-ons are the same files as in m6.
 
 Each feature's own change log, as its builder wrote it, is in [`features/`](features/) (`README.md`, and `FINDINGS.md` where there is one). Paths in those files point into the builder's workspace, not into this repository.
 
