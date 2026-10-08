@@ -1,15 +1,15 @@
 {
   "track": "m3epbuggin",
-  "version": "2026.10.07-m7",
-  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.07-m7/scda-ce-m3ep-2026.10.07-m7.scdaupd",
-  "sha256": "dab501a2aede7f0d708bac6862b9d9d90dc3a083253953588bacbb42f35a6903",
-  "size": 3023115,
-  "notes": "Modes crash fix added: the game no longer crashes while a map loads (Modes.asi+9F75); Community Edition's Modes.asi no longer scans the game's name list from a background thread. On Community Edition 2026.10.02-5; the eight other add-ons are unchanged.",
-  "released": "2026-10-07T20:11:42Z",
+  "version": "2026.10.07-m8",
+  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.07-m8/scda-ce-m3ep-2026.10.07-m8.scdaupd",
+  "sha256": "ad20e105236c3d33b9615bd45b454acb11b4c604fb14d9efb09b23c416e648e0",
+  "size": 2967938,
+  "notes": "Chat list rebuilt on the game's own rules, and dead players can chat: the game's own two dead-chat gates are removed (on the host, dead players' lines reach everyone; the list shows while dead, in the kill cam and spectating). The no-mic fix, the join crash fix and the Modes crash fix are taken out. On Community Edition 2026.10.07-1; the five other add-ons are unchanged.",
+  "released": "2026-10-08T18:28:24Z",
   "addons": [
     {
       "code": "M3CHAT",
-      "title": "Chat as a list, always on",
+      "title": "Chat as a list",
       "kind": "files"
     },
     {
@@ -33,23 +33,8 @@
       "kind": "files"
     },
     {
-      "code": "M3NMIC",
-      "title": "No-mic fix -- the game starts without a microphone",
-      "kind": "files"
-    },
-    {
-      "code": "M3RHUD",
-      "title": "Join crash fix -- the HUD waits for your character",
-      "kind": "files"
-    },
-    {
       "code": "M3RBZK",
       "title": "Root berzerk -- spin out of the wall stagger",
-      "kind": "files"
-    },
-    {
-      "code": "M3MODF",
-      "title": "Modes crash fix -- no crash while a map loads",
       "kind": "files"
     }
   ],
