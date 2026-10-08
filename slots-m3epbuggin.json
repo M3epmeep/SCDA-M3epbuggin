@@ -25,13 +25,13 @@
    "enabled": true,
    "kind": "files",
    "code": "M3CHAT",
-   "title": "Chat as a list, always on",
-   "notes": "The chat at the bottom left is a plain list of up to 8 messages that works alive, dead, spectating and in the drone and scope views; on the host, dead players' chat reaches everyone.",
-   "_status": "chat-list v3 on main 2026.10.02-4 (m3): replaces the whole exe over SMOKE; built on -4's SMOKE exe md5 4a17634f (0f1b2d1c + door carry). Result md5 0fd28e5f = v3 3fba79cf with door carry's 239 bytes laid on; gates static 76/76, harness 157/157, plugin sites pass (Deploy\\chat-list\\build\\gates\\m4). m1/m2 shipped 3fba79cf on 0f1b2d1c.",
+   "title": "Chat as a list",
+   "notes": "The chat at the bottom left is a plain list of up to 8 messages, the newest at the bottom, each fading out after 10 seconds, with no frame. It shows where the normal chat shows and also while you are dead, in the kill cam and spectating (with the HUD add-on also in the drone and the scope); on the host, dead players' chat reaches everyone.",
+   "_status": "chat-list v4d (m8): v4's list on Community Edition 2026.10.07-1's SMOKE exe md5 4a17634f, built --dead-chat 1 --stock-vis 1 --dead-show 1: drawn only in the frames the stock chat widget runs, and the game's own two dead-chat gates removed (host fan-out 0x109B8B36 8B 80 -> EB 18; widget 18 mode mask 0x10B816A8 02 -> 33 = modes 0, 1, 4, 5, 11; Deploy\\dead-chat-gate). Result md5 2f0cb988f58fe3989cef45f27996b414, 7,725,056 B (v4 2724a697 + 4 bytes); static gate 83/83, harness 204/204, coexistence 60/0 (Deploy\\chat-list\\build\\gates\\v4d). m3-m7 shipped v3 0fd28e5f; m1/m2 3fba79cf on 0f1b2d1c.",
    "files": [
     {
      "install_path": "System/SCDA_Online.exe",
-     "source": "sources/SCDA_Online.exe.chatlist3.m4",
+     "source": "sources/SCDA_Online.exe.chatlist4d.m8",
      "force_full": true,
      "over": "SMOKE"
     }
@@ -109,36 +109,6 @@
   {
    "enabled": true,
    "kind": "files",
-   "code": "M3NMIC",
-   "title": "No-mic fix -- the game starts without a microphone",
-   "notes": "On a PC with no working microphone the game no longer crashes during start-up (SCDA_Online.exe+37A133). Voice send stays off; hearing the other players keeps working. With a working microphone it does nothing.",
-   "_status": "no-mic-guard (m4): NoMicGuard.asi md5 cc449c0d, three in-memory hooks in the voice init, each byte-checked at load. Gated on CE 2026.10.02-5's SMOKE exe 4a17634f and M3CHAT's 0fd28e5f (105 PASS 0 FAIL, harness 21/21 each); started without a microphone on the test version 2026-10-05: main menu, alive at 90 s.",
-   "files": [
-    {
-     "install_path": "System/NoMicGuard.asi",
-     "source": "sources/NoMicGuard.asi",
-     "force_full": true
-    }
-   ]
-  },
-  {
-   "enabled": true,
-   "kind": "files",
-   "code": "M3RHUD",
-   "title": "Join crash fix -- the HUD waits for your character",
-   "notes": "A player joining a match no longer crashes while loading in (SCDA_Online.exe+271EDA): the game built the HUD before the player's character had arrived. The HUD is now built in the first frame the character exists. When the character is already there it does nothing.",
-   "_status": "two-player-load-crash (m5): ResetHudDefer.asi md5 4e3396c4, two in-memory hooks (HUD builder 0x10B71340 defer, AHUD vtable +0x440 replay), each checked against its stock content at load. Static gate 52 PASS 0 FAIL on 0fd28e5f, fc237f82, 4a17634f, 0f1b2d1c, 4dccc646. Not yet seen running in a two-player game.",
-   "files": [
-    {
-     "install_path": "System/ResetHudDefer.asi",
-     "source": "sources/ResetHudDefer.asi",
-     "force_full": true
-    }
-   ]
-  },
-  {
-   "enabled": true,
-   "kind": "files",
    "code": "M3RBZK",
    "title": "Root berzerk -- spin out of the wall stagger",
    "notes": "A merc who sprints into a wall can start the berserk spin at any moment of the stagger instead of having the key swallowed until it ends. Same button, same 1.5 s cooldown, same reload and crouch rules as the stock spin. Only the merc's own PC needs it; bots stay stock.",
@@ -155,22 +125,57 @@
      "force_full": true
     }
    ]
-  },
-  {
-   "enabled": true,
-   "kind": "files",
-   "code": "M3MODF",
-   "title": "Modes crash fix -- no crash while a map loads",
-   "notes": "The game no longer crashes while a map loads (Modes.asi+9F75): Community Edition's Modes.asi kept scanning the game's name list from a background thread for up to 10 minutes and read it while the game was moving it. That scan is skipped; the end-of-round messages still look the names up themselves. Every player benefits on their own PC.",
-   "_status": "modes-name-scan-fix (m7): Community Edition 2026.10.02-5's Modes.asi (MAPOBJ, md5 e5d6f25e) with the install thread's name-retry loop skipped, 2 edits at RVA 0xBF30 / 0xBF42 (8 bytes written, 7 differ, no relocation over them); result md5 f04f5a9d, same size. Gate 8 PASS 0 FAIL. Shipped whole over MAPOBJ, so a launcher puts MAPOBJ's Modes.asi back when M3MODF goes off. Crash measured 2026-10-07 on a joining client loading BLKG1_VS. Not yet seen running in game.",
-   "files": [
-    {
-     "install_path": "System/Modes.asi",
-     "source": "sources/Modes.namescanfix.asi",
-     "force_full": true,
-     "over": "MAPOBJ"
-    }
-   ]
   }
- ]
+ ],
+ "_retired": {
+  "_why": "Dropped from M3epbuggin 2026.10.07-m8 on the operator's order of 2026-10-07 (\"remove the no mic guard\" / \"take out the two fixes as well\"). M3eptemp 3.21.20261007 names the three codes in channels.RETIRED[\"m3epbuggin\"] and their published hashes in RETIRED_SHA256, so an installed copy is taken out on the next update or PLAY (Modes.asi: MAPOBJ's own comes back). Kept here only as the record of what was shipped.",
+  "addons": [
+   {
+    "enabled": true,
+    "kind": "files",
+    "code": "M3NMIC",
+    "title": "No-mic fix -- the game starts without a microphone",
+    "notes": "On a PC with no working microphone the game no longer crashes during start-up (SCDA_Online.exe+37A133). Voice send stays off; hearing the other players keeps working. With a working microphone it does nothing.",
+    "_status": "no-mic-guard (m4): NoMicGuard.asi md5 cc449c0d, three in-memory hooks in the voice init, each byte-checked at load. Gated on CE 2026.10.02-5's SMOKE exe 4a17634f and M3CHAT's 0fd28e5f (105 PASS 0 FAIL, harness 21/21 each); started without a microphone on the test version 2026-10-05: main menu, alive at 90 s.",
+    "files": [
+     {
+      "install_path": "System/NoMicGuard.asi",
+      "source": "sources/NoMicGuard.asi",
+      "force_full": true
+     }
+    ]
+   },
+   {
+    "enabled": true,
+    "kind": "files",
+    "code": "M3RHUD",
+    "title": "Join crash fix -- the HUD waits for your character",
+    "notes": "A player joining a match no longer crashes while loading in (SCDA_Online.exe+271EDA): the game built the HUD before the player's character had arrived. The HUD is now built in the first frame the character exists. When the character is already there it does nothing.",
+    "_status": "two-player-load-crash (m5): ResetHudDefer.asi md5 4e3396c4, two in-memory hooks (HUD builder 0x10B71340 defer, AHUD vtable +0x440 replay), each checked against its stock content at load. Static gate 52 PASS 0 FAIL on 0fd28e5f, fc237f82, 4a17634f, 0f1b2d1c, 4dccc646. Not yet seen running in a two-player game.",
+    "files": [
+     {
+      "install_path": "System/ResetHudDefer.asi",
+      "source": "sources/ResetHudDefer.asi",
+      "force_full": true
+     }
+    ]
+   },
+   {
+    "enabled": true,
+    "kind": "files",
+    "code": "M3MODF",
+    "title": "Modes crash fix -- no crash while a map loads",
+    "notes": "The game no longer crashes while a map loads (Modes.asi+9F75): Community Edition's Modes.asi kept scanning the game's name list from a background thread for up to 10 minutes and read it while the game was moving it. That scan is skipped; the end-of-round messages still look the names up themselves. Every player benefits on their own PC.",
+    "_status": "modes-name-scan-fix (m7): Community Edition 2026.10.02-5's Modes.asi (MAPOBJ, md5 e5d6f25e) with the install thread's name-retry loop skipped, 2 edits at RVA 0xBF30 / 0xBF42 (8 bytes written, 7 differ, no relocation over them); result md5 f04f5a9d, same size. Gate 8 PASS 0 FAIL. Shipped whole over MAPOBJ, so a launcher puts MAPOBJ's Modes.asi back when M3MODF goes off. Crash measured 2026-10-07 on a joining client loading BLKG1_VS. Not yet seen running in game.",
+    "files": [
+     {
+      "install_path": "System/Modes.asi",
+      "source": "sources/Modes.namescanfix.asi",
+      "force_full": true,
+      "over": "MAPOBJ"
+     }
+    ]
+   }
+  ]
+ }
 }

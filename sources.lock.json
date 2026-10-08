@@ -45,6 +45,14 @@
    "sha256": "4481b7078f050116174179efd79c9dddc968d570c767b389d1c51ac3a5796b32",
    "size": 7725056
   },
+  "sources/SCDA_Online.exe.chatlist4.m8": {
+   "sha256": "5a50ab9fc6ad616f3ab6922b1f082ac2ff2843cb736918bc3d412f46a79edcda",
+   "size": 7725056
+  },
+  "sources/SCDA_Online.exe.chatlist4d.m8": {
+   "sha256": "318e71bd571eb72c1d45f6b97a9424fd708cf984597fa9e4eb3ef5f572fec814",
+   "size": 7725056
+  },
   "sources/SniperHeadshotSound.v2.asi": {
    "sha256": "2d1d5f85f8ba886d619ee5314fac6e6cd0f5a481d23702b34da924d0cd31e285",
    "size": 8704

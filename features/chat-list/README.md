@@ -1,10 +1,14 @@
 # chat-list
 
-> **In this channel since 2026.10.02-m3: v3 rebuilt on Community Edition 2026.10.02-4's exe.** Community Edition 2026.10.02-4's `SMOKE` exe (md5 `4a17634f`) is the earlier `0f1b2d1c` plus SYNCADE's door-carry patch (Club House lifts carry players): 239 bytes in three spans inside `.text`, at file `0x4AFB06` (5-byte hook) and two code caves at `0x52EB50` and `0x52EEE0`, no section appended. `M3CHAT` now ships md5 `0fd28e5f` (7,725,056 bytes) = v3 `3fba79cf` with exactly those 239 bytes laid on, so the lift fix stays; nothing of v3 moved (`.chat` at file `0x75B000`, `.chatd` at `0x75C000`). Gates on the new base: static 76 of 76, harness 157 of 157, the four plugins' sites unchanged. m1 and m2 shipped `3fba79cf` (built on `0f1b2d1c`). The text below is v3's change log as its builder wrote it.
+> **In this channel since 2026.10.07-m8: v4d on Community Edition 2026.10.07-1's exe.** `M3CHAT` ships md5 `2f0cb988f58fe3989cef45f27996b414` (7,725,056 bytes) = the list's look (v3's drawing, unchanged) drawn only in the frames the game's own chat widget runs (v4, `--stock-vis 1`), plus the game's own two dead-chat gates removed (`--dead-chat 1 --dead-show 1`: the host's fan-out `0x109B8B36` `8B 80` -> `EB 18`, the chat widget's mode mask `0x10B816A8` `02` -> `33`), so the list shows while dead, in the kill cam and spectating, and a dead player's line reaches everyone when the host runs it. Gates: static 83 of 83, harness 204 of 204, coexistence 60 of 0 failures. Seen working in game on 2026-10-08 (one PC, host: lines typed while dead, sent and listed). m3-m7 shipped v3 `0fd28e5f` (always on), m1 and m2 `3fba79cf`. Sections "v4 look only" and "v4d" below; the rest is v3's change log as its builder wrote it.
 
 The chat is drawn by the game's own canvas text routine as an overlay at the bottom left - up to 8 messages as a list, the newest at the bottom and older lines pushed up without any slide, each message for 10 seconds and then fading over 1 second, lines 15 characters longer at the stock letter size, no frame - always: alive, dead, in the kill cam, spectating, in the drone and scope views, with a menu open, and kept over a respawn, a team switch and a new level, while the stock chat widget is switched off; on the host a dead or spectating player's line goes out to every player.
 
 Version 3, built by CL-7 on 2026-09-30 as a patch of `System\SCDA_Online.exe` (main build md5 `0f1b2d1ce8167d267ee15d5a4ed4c3e6`). No plugin, no import, no Win32 call, no API lookup, no thread, no input reading, no file access. State: **built, gates pass (0 FAIL), run 5 in game on 2026-09-30: works alive, dead, in the kill cam and after a team switch and a respawn; operator's verdict "ok, chat succeeded"** (test log row 5; a second player, spectating and the menus with live lines were not seen). Version 2 (CL-5, md5 `b28c9113`, papers `*.v2`) worked alive (run 3) and failed the dead state (run 4); version 1 (CL-4, md5 `c4f50a7f`, papers `*.v1`) drew nothing.
+
+2026-10-03 (C-1): v3 rebuilt on main 2026.10.02-4's exe `4a17634f` (`0f1b2d1c` + door carry) is in `files-m4\` (md5 `0fd28e5f`); see the section "v3 on main 2026.10.02-4".
+
+2026-10-08 (V-1b): v4 "look only" on Community Edition 2026.10.07-1 (exe `4a17634f`) is in `files-v4\` (md5 `2724a697`): the list look of v3, drawn exactly where and when the stock chat would be drawn, no dead chat; see the section "v4 look only on Community Edition 2026.10.07-1". The default builds are still v3 byte for byte.
 
 Orders, in the operator's words: 16:1x "New feature: the bottom left chat. It should be the same size, but messages do not scroll in anymore but are displayed as a list. The most current always at the bottom, then shoved upwards when a new msg arrives. And after 10 seconds, the message fades. Message limit is 8 messages / notifications. Testrun it, spawning as spy will show spawn protection messages that should be good as proof of concept"; 19:3x "ok, Merc hud worked well, expansion on the ´chat functions extend the line lenght per line by 15 chars remove the frame arund it and put them closer together, when a character is dead, the chat should remain and still be shown, including incoming messages, players who are dead, are still able to chat"; 20:1x "Full plugin", "start working on the scda_online.exe but, what do you need to patch it?"; 20:2x "Wider chat, same text size"; 21:4x "instead of fixing the rendering, can you detect incoming messages and just put them on a new custom overlay?"; 22:5x "set also next goal in resume for the chat: that it shows when dead, and that it also works to chat when dead"; 23:27 "continue on the chat always working feature"; 2026-09-30 00:03 "resume".
 
@@ -198,17 +202,185 @@ Counters: `dup` = records seen again and skipped (an earlier MessageManager read
 - Dragging the contents of `files\` (its `System` folder) onto the install root and choosing replace applies the feature (on the host: including dead chat). The drop makes no backup and checks no md5; `patch.ps1` does both.
 - The stack replaces the whole exe: it cannot be combined with another exe stack, and it must be rebuilt when main's exe changes.
 
+## v3 on main 2026.10.02-4
+
+Built by C-1 on 2026-10-03 (brief `BRIEF-C1.md`, notes `C1-notes.md`). Main 2026.10.02-4 (release `v2026.10.02-4`, 2026-10-02 21:05Z, "Club House lifts carry you up and down again") ships a new SMOKE exe `4a17634f` = `0f1b2d1c` + SYNCADE's door carry (`toolbox\patch_door_carry_exe.py`). `files-m4\` carries v3 rebuilt on it, for the M3epbuggin channel's `M3CHAT` add-on (`"over": "SMOKE"`). `files\` (v3 on `0f1b2d1c`) and `patch.ps1` are unchanged.
+
+| Item | Value |
+| --- | --- |
+| base | `4a17634fbebc1cb2c6b550cc35337d9f`, 7,712,768 B (sha256 `bcbb05de...b944`). Obtained by two routes that agree byte for byte: (1) C-1 downloaded release `v2026.10.02-4` (`REALSYNCADE/SCDA-Launcher`, `scda-ce-2026.10.02-4.scdaupd`) and applied the SMOKE add-on's delta (`payloads/System__SCDA_Online.exe`, SCPD1) with `scpatch.py` to stock `fc237f82` (sha256 `ee80d235...`, from the `sources` store of `REALSYNCADE/SCDA-Experimental`); (2) the copy the launcher itself built in `%LOCALAPPDATA%\M3eptemp\...\under\System` (read only, md5 and compare). The catalogue's `sources.lock.json` does not name it: `slots.json` points to `../release-sources/SCDA_Online.exe.smokemine.flashbang.doorcarry` |
+| door carry | `4a17634f` = `0f1b2d1c` + SYNCADE's `toolbox\patch_door_carry_exe.py`: 239 bytes differ from `0f1b2d1c`, in three spans (266 B) all in `.text`: the hook at `0x10DAFB06` (file `0x4AFB06`, 5 B) `8D 43 28 89 08` -> `E9 D5 F3 07 00` (jmp `0x10E2EEE0`); the main cave `0x10E2EEE0..0x10E2EFB4` (file `0x52EEE0`, 213 B, was zero; one call to FarMoveActor `0x10A1EBD0`); the tail `0x10E2EB50..0x10E2EB7F` (file `0x52EB50`, 48 B, was zero; jumps back to `0x10DAFB0B`). The PE header is byte-identical (5 sections, SizeOfImage `0x7E2000`, CheckSum `0x00768CB7`, same length), so no section was appended. `patch_door_carry_exe.build()` on `0f1b2d1c` gives `4a17634f` byte for byte |
+| overlap | none. The chat list's 9 fields (header `0x146..0x34F`, `0x109B8B36` 2 B, `0x10A50607` 5 B, `0x10F930AC` 4 B) and `.chat` / `.chatd` (appended after `.reloc`) are at least 1,458,424 B from door carry (the nearest is `0x10F930AC`, to the main cave). The chat list leaves the `.text` slack `0x10E2EB41..0x10E2EFFF` untouched. Nothing moved: `.chat` is still at raw `0x75B000` / VA `0x110E2000` and `.chatd` at raw `0x75C000` / VA `0x110E3000` |
+| result | `files-m4\System\SCDA_Online.exe`, 7,725,056 B, md5 **`0fd28e5f875c37db072735e005174407`**. It equals `3fba79cf` with door carry's 239 bytes laid on, byte for byte. Against `4a17634f` it differs in exactly v3's 41 changed bytes plus the 12,288 appended bytes |
+| builder | `build\builder\Program.cs` (md5 `25a48b28`; the prior copy is `Program.cs.pre-c1`, `c8d40eb9`) accepts `4a17634f` beside `0f1b2d1c`. The build info, the gate header and patch.ps1 name the base. patch.ps1 recognises v2 and v1 only on `0f1b2d1c`. On `4a17634f` the gate adds two door-carry checks. `0f1b2d1c` still gives `3fba79cf` / patch.ps1 `35a5eb1b` (3 builds) and the same 74-check gate |
+| gates (`build\gates\m4\`) | `build.txt`: 3 builds, one md5 (exe `0fd28e5f`, patch.ps1 `91747510`). `gate.txt`: ALL PASS, 76 checks: v3's 74 (the dead-site gate included), plus door carry kept byte for byte with its flow (hook -> cave -> tail -> `0x10DAFB0B`), plus no changed byte within 16 B of it. `harness.txt`: ALL PASS, 157 checks; the transcript equals v3's except for the exe path. `sites.txt` (`sites.py`): ALL PASS. `patch-m4.ps1` is not delivered; its dry run on a scratch `System` applied `4a17634f` -> `0fd28e5f`, reverted to `4a17634f` and refused `3fba79cf` as another build |
+| plugin sites | every site holds its stock bytes, and the 256 B on each side equal `0f1b2d1c`'s and `4a17634f`'s. The sites: QolHud A `0x10B73C90` and B `0x10B70E98` (with its 3 compared blocks); SniperHeadshotSound `0x10BD842B` `8B 85 14 16 00 00`; SpyGrab `0x10BCAE97`, `0x10BC9F2D`, `0x10C35FEB` and `0x10BCB00F` (with 30.0 at `0x10FA4A68`); QOL4Necks J1 `0x10BCAE92`, J2 `0x10BCB009` (with 3000.0 / 1500.0), J3 `0x10BC9F18`, D `0x10BD8AD0` and D2 `0x10DAA307`. D2 is the nearest to door carry, 22,522 B away |
+| papers | `build\gates\m4\`: `build.txt`, `gate.txt`, `harness.txt`, `sites.txt` with `sites.py` (run as `sites.py <new exe> <4a17634f> <0f1b2d1c>`), `patch-m4.ps1` (`91747510`, generated, not delivered); brief `BRIEF-C1.md`, notes `C1-notes.md`. Working copies in `scratch\c1\`: the bases `base-4a17634f.exe` and `base-0f1b2d1c.exe` (the latter rebuilt from `files\` by reverting v3's changes; md5 verified), the compiled builder `bld\bin`, the harness `har\bin` and its runtime `rt\`, the 0f1b2d1c gate transcript `gate-0f1b.txt` (74/74). The build outputs the transcripts name (`m4out1\SCDA_Online.exe`, `old1\SCDA_Online.exe`) were byte copies of `files-m4\` and `files\` (same md5) and were deleted by C-1b; the downloads (`scratch\c1\dl\`: bundle and stock exe) are gone |
+| not done | no game was started and nothing was installed. The chat list and door carry have not been seen together in game |
+
+## v4 look only on Community Edition 2026.10.07-1
+
+v4 draws v3's chat list (requirements 1-5 and 8 unchanged) exactly where and when the stock chat would be drawn, and leaves the host's dead-sender test as the base has it. Built by V-1b on 2026-10-08 (brief `BRIEF-v4.md`, notes `V4-notes.md`; V-1 began it and was paused) for the M3epbuggin channel. Orders, in the operator's words (2026-10-07): "new build, use https://raw.githubusercontent.com/REALSYNCADE/SCDA-Launcher/main/latest.json as main reference, in case you need to reverse it, remove the no mic guard, and the new chat features, but maintain the new UI look, all gameplay changes that are in the new build should be included"; "i ment chat list look, keep drone and scope hud as well. keep voice".
+
+| Item | Value |
+| --- | --- |
+| base | Community Edition 2026.10.07-1's SMOKE exe `4a17634fbebc1cb2c6b550cc35337d9f`, 7,712,768 B (unchanged since 2026.10.02-4; `scratch\c1\base-4a17634f.exe` = `scratch\v4\ce-2026.10.07-1\SCDA_Online.exe`) |
+| build | `ChatExeBuild build <4a17634f> <out> --dead-chat 0 --stock-vis 1` (new switch `--stock-vis 0|1`, default 0) |
+| result | `files-v4\System\SCDA_Online.exe`, 7,725,056 B, md5 **`2724a6976315aee7992e1562aca61d64`**; replaces `4a17634f` |
+| default builds | unchanged: `3fba79cf` from `0f1b2d1c` and `0fd28e5f` from `4a17634f` (patch.ps1 `35a5eb1b` / `91747510`); with `--stock-vis 0` the builder emits no new byte |
+| not done | no game was started and nothing was installed; v4 has not run in game |
+
+### The gate's route
+
+| # | Fact | Status |
+| --- | --- | --- |
+| 1 | widget 18's mode mask is live, not a constant: `[widget+0x34]`; its ctor `0x10B81650` (one call, `0x10B7262B` in the HUD builder `0x10B721F0`) has the base ctor write 0 (`0x10B739F1`), then `or [esi+0x34],0x802` (`0x10B816A5`); the mode test vt+0xC `0x10B73C90` is `(1 << mode) & [widget+0x34]` | VERIFIED (disassembly) |
+| 2 | the HUD loop `0x10B70EF0` has one caller, `0x10A155FD` in `0x10A15550` (the engine tick `0x10A14E80`): once per tick, for viewport 0's PlayerController `[viewport+0x2C]` and its HUD `[PC+0x95C]`; it returns at once on HUD_TOGGLE `[0x1100FF04]`; per widget it calls the update slot +0x1C when the mode is 7 or vt+0xC(7) or vt+0xC(mode) answers 1, else the hide path `0x10B747E0`; it does not test the menu | VERIFIED (disassembly) |
+| 3 | the loop is not inside the scene render: the scene render `0x10A50050` (site 7) runs from Engine::Draw `0x10A14220`: the normal path `0x10A148EA`, or a one-shot request path `0x10A15D40` (`[[viewport+0x64]+0x40]`, cleared at once) that can render twice (`0x10A16171`, `0x10A16784`) | VERIFIED; that `0x10A15D40` is the screenshot path INFERRED |
+| 4 | the stock chat's items are drawn only when the HUD `[viewport+0x68]` exists, `[HUD+0x428]` != 0 (`0x10A50573`), the menu's vt+0x38 answers 0 and HUD_TOGGLE is 0 (`0x10B70E30`), with the visibility the last HUD loop gave them | VERIFIED (disassembly) |
+| 5 | one HUD loop per site-7 call in game: run 5's probe (v3) counted `supp` and `calls` rising by the same number in mode 11 (907 / 907) and in mode 1 as merc (403 / 403) | VERIFIED (run 5 probe) |
+| 6 | which comes first within one tick, the draw or the loop (the client tick vt+0x7C at `0x10A15593` runs before the loop) | not settled; the route does not depend on it (harness V3) |
+
+Route built: the brief's stamp route, as a one-shot flag. Suppress (which the loop calls only when the stock chat would be shown) sets `R_STAMP`; Overlay copies it into `R_VIS` and clears it at its entry on every call; the draw needs `R_VIS` (gate 12 "the stock chat is not shown"). With one loop per draw this is exact in either order within a tick: the draw follows the visibility the last loop gave the stock items. `--stock-vis 1` also forces the scene render's own HUD-block conditions on (the node gate `[HUD+0x428]`, the menu gate vt+0x38, the toggle gate HUD_TOGGLE). The brief's fallback (a test of the mode against the mask at draw time) was not needed and would not follow the loop's other conditions (no PlayerController, HUD_TOGGLE) nor QolHud's answer. Capture, owners, the own clock, expiry, limits and alphas still run every frame: a hidden list keeps its entries, which age on and show again with the life they have left.
+
+### Changes against Community Edition 2026.10.07-1 (rows 5, 8, 9, 10, 11 differ from v3)
+
+| # | File | Site | Stock | New | Purpose |
+| --- | --- | --- | --- | --- | --- |
+| 1-4 | `System\SCDA_Online.exe` | file `0x146`, `0x15C`, `0x160`, `0x190` | as v3 rows 1-4 | as v3 rows 1-4 | two sections, their sizes |
+| 5 | same | file `0x300`, section header 6 | zeros | `2E63686174000000FF0B000000207E000010000000B0750000000000000000000000000020000060`: `.chat`, VirtualSize **`0xBFF`** (v3 `0xBBB`), RVA `0x7E2000`, raw size `0x1000`, raw `0x75B000`, flags `0x60000020` | the code |
+| 6 | same | file `0x328`, section header 7 | zeros | as v3 row 6: `.chatd`, VirtualSize `0x1300`, RVA `0x7E3000`, raw size `0x2000`, raw `0x75C000`, flags `0xC0000040` | the data |
+| 7 | same | VA `0x10A50607` (file `0x150607`) | `E8 B4 BF 00 00` | `E8 F4 19 69 00` (`call 0x110E2000` Overlay), as v3 | Overlay after the HUD block, ends with `jmp 0x10A5C5C0` |
+| 8 | same | VA `0x10F930AC` (file `0x6930AC`), widget 18 vtable slot +0x1C | `30 29 B8 10` | **`BF 22 0E 11`** (`0x110E22BF` Suppress; v3 `85 22 0E 11`) | the stock widget hidden; v4: the stamp |
+| 9 | same | VA `0x109B8B36` | `8B 80` | **not changed** (v3: `EB 18`) | no dead chat: the host drops a dead sender's line as the base does |
+| 10 | same | file `0x75B000..0x75BFFF` appended: `.chat` | - | 3,071 bytes of code (md5 `1c639b4275cb39f7ee967b74005e5e01`), zero padded to 0x1000 (page md5 `40b47515d4384196fbf53dfcb1ef7fd2`) | Overlay with the stamp gate, Suppress with the stamp; listing `build\gates\v4\listing.txt` |
+| 11 | same | file `0x75C000..0x75DFFF` appended: `.chatd` | - | 0x2000 bytes (md5 `badc1ca2291dfc95328ec6cca550c5c9`) = v3's `.chatd` with 5 dwords changed: `0x008` version 3 -> **4**, `0x1100` K_GMENU 0 -> **1**, `0x1104` K_GNODE 0 -> **1**, `0x1114` K_DEADCHAT 1 -> **0**, `0x11AC` K_STOCKVIS 0 -> **1** | constants and state |
+
+- Against `4a17634f`: 39 bytes differ inside its length (32 header bytes, 3 at the draw site, 4 at the slot), plus the 12,288 appended bytes. CheckSum left as found (`0x00768CB7`); no relocation added; the only relocation entry touching a changed byte is the slot's own.
+- New code (only with `--stock-vis 1`): Overlay's first instructions after its call counter `mov eax,[R_STAMP]` / `mov [R_VIS],eax` / `mov dword [R_STAMP],0`; after the zone gate `cmp dword [K_STOCKVIS],0` / `je draw` / `cmp dword [R_VIS],0` / `je gate12` (`mov dword [R_GATE],12`); per-gate counters 13 (`0x11C0..0x11F3`); Suppress `mov dword [R_STAMP],1` after its counter. New `.chatd` fields `K_STOCKVIS 0x11AC`, `R_STAMP 0x11B0`, `R_VIS 0x11B4` (zero in a default build). Labels: overlay `0x110E2000`, suppress `0x110E22BF`, clock `0x110E2309`, capture `0x110E23FE`, addEntry `0x110E25C0`, expire `0x110E272A`, drawList `0x110E2868`, textAt `0x110E2BB8`, end `0x110E2BFE`.
+
+### Requirements in v4
+
+| # | v4 | Evidence |
+| --- | --- | --- |
+| 1-5, 8 | kept: the list code and constants are v3's (wrap 726 font px, 8 messages, 12 rows, 10 s + 1 s, no frame, stock widget suppressed) | harness L (A..E, M 3,000 frames against the model), R4 at three screen sizes, S4 |
+| 6, visibility | removed: drawn only where widget 18 runs (modes 1, 11, 7; with QolHud also 3, 9); not in 0, 4, 5, 13, 2, 8 (nor 3, 9 without QolHud); not under a covering menu, with HUD_TOGGLE, without the HUD scene node | harness R4, G4, S4, Q4, V |
+| 6, robustness | kept: capture, owners, clock and expiry every frame; entries kept while hidden and drawn again with the life left | harness V4, O, T, K |
+| 7 | removed: site 9 holds the base's 26 bytes | static gate (dead site), harness X4 |
+
+### Gates (`build\gates\v4\`, runner `run-gates-v4.ps1 -Work scratch\v4\work`, 2026-10-08 19:44 PC)
+
+| Gate | Result |
+| --- | --- |
+| `build.txt` | PASS: three v4 builds, one md5 (exe `2724a697`, its patch.ps1 `5b46326a`, not delivered); default builds `0fd28e5f` / `3fba79cf` and patch.ps1 `91747510` / `35a5eb1b` equal `files-m4\` / `files\`; `files-v4\` = the build |
+| `gate.txt` (static) | ALL PASS, 79 checks: v3's 76 on `4a17634f` (header, every byte, the sites, the dead site "holds main's bytes (built with --dead-chat 0)", relocations, the 23 compared ranges, `.chatd`, the rebuild, `.chat` disassembled with v3's rules: 755 instructions, absolute data only in `.chatd` and the two HUD globals, calls only through the FN table and the menu's vt+0x38, no `int`/`syscall`/`in`/`out`/`rdtsc`/`cpuid`; QolHud, Enhanced, DedServer, door carry kept byte for byte and 1,458,424 B away) plus 3 v4 checks (the switches; the stamp in Suppress and Overlay's entry; the stamp gate as the last test before the only call of drawList, reached by no other branch) |
+| `gate-defaults.txt` | PASS: the static gates of both default builds equal C-1's transcripts line for line (76 and 74 checks) |
+| `harness.txt` | ALL PASS, 187 checks: R4 (modes 1, 11, 0, 4, 5, 13, 3, 9, 2, 8, 7: the real HUD loop, then the real scene tail), G4, V (the one-shot stamp: loop/draw/draw, loop/loop/draw, the draw-first order, mode 0 for 4 s with a message arriving hidden, no PlayerController), L, K, O, T, X4 (the real fan-out with the base's bytes: no pawn, Health 0, Health -25 and a dead TEAMSAY dropped, a living SAY to 3, a living TEAMSAY to 2, delivered through the real SimpleStringToClient and add, drawn in mode 1, kept but hidden in mode 5), S4, Q4 (QolHud v3 loaded: drawn in modes 3, 9, 1, 11, hidden in 0, 4, 5) |
+| `harness-defaults.txt` | PASS: the harness on `0fd28e5f` and `3fba79cf` gives v3's transcripts (157 checks each), and C-1's compiled harness the same lines |
+| `coexist.txt` | ALL PASS, 43 checks (next section) |
+| `probe.txt` | PASS: `build\probe-v4\chat-state.ps1` (a copy of `test\chat-state.ps1` that also reads data version 4; the v3 probe refuses it) read the harness's live v4 `.chatd`: header v4 with stock visibility 1, `vis 1` with "drawn", "a menu covers the HUD", mode 5 `vis 0` with "stock chat not shown" |
+
+### Coexistence
+
+| With | Result |
+| --- | --- |
+| CE 2026.10.07-1's plugins, from their start logs (`scratch\v4\ce-2026.10.07-1\`) | v4 holds the base's bytes over every "ok 0x... +N" range and hook site; nearest v4 change: Modes 2,589 B, ObjHack 199 B, VentChain 117,684 B, ProxVoice, RollFix, SpawnProt above 1.6 MB; MatchRec is disabled (no reads, no ranges in its log); Enhanced's 70 byte patterns cover no changed byte |
+| ObjHack.asi | compares 42 B at `0x10A506D1` and 16-B heads at `0x109FCE80`, `0x109FCF60`, `0x109FD2B0`, `0x109992F0` (read from its code, `0x100045F0..0x10004682`), hooks 5 B at `0x10A506E7` (`call 0x10A57BB0`, after the menus and the console in the scene render): 199 B after site 7's last changed byte; its countdown box draws after the list, as with v3 |
+| Modes.asi, hook at `0x109B8C20` | its handler `0x1000E9C0` either replays the 8 stock bytes `8B 44 24 04 83 78 04 00` (held by v4) and continues at `0x109B8C28`, or returns (`ret 0xC`) before the add: every MessageStack record the capture reads is written by the stock add `0x109B81D0` (unchanged), so v4 lists what the stock chat would list |
+| the channel's plugins (QolHud v3, SniperHeadshotSound, SpyGrab, QOL4Necks, RootBerzerk `0x10BC7A29` 10 B) | every compared site held, +-256 B equal to `4a17634f` and `0f1b2d1c`, the nearest v4 change over 70 KB away |
+| image addresses inside the plugins | none of the 13 plugins carries an address inside `.chat` / `.chatd` (`0x110E2000..0x110E4FFF`); the nearest to a changed byte is 199 B (ObjHack) |
+| other exe stacks | excluded, as v3 (they replace the same exe) |
+
+### Drone and scope (brief point 4)
+
+Widget 18's mask `0x802` does not hold modes 3 (drone) and 9 (scope): the stock chat is hidden there and so is v4's list. With `QolHud.asi` v3 (defaults Drone=1, Sniper=1) its stub at `0x10B73C90` answers 1 for widget 18 in modes 3 and 9, the HUD loop calls Suppress, and v4 draws the list in the drone and scope views on top of QolHud's split (harness Q4 modes 3 and 9, S4 "QolHud in"). v4 carries no mode list of its own.
+
+### Install, known limits, open
+
+- The channel's `M3CHAT` add-on (`"over": "SMOKE"`): its payload becomes `files-v4\System\SCDA_Online.exe` (`2724a697`, replaces `4a17634f`). By hand: drag the contents of `files-v4\` onto a Community Edition 2026.10.07-1 install root and choose replace. No patch script is delivered for v4.
+- In-game test to do: the list as in run 5 in modes 1 and 11; hidden when dead, in the kill cam and spectating, under the in-game menu and the quit dialog; never a second (stock) chat; drone and scope only with QolHud; the probe `build\probe-v4\chat-state.ps1` (`vis`, gate "stock chat not shown", `supp` rising one per frame while `vis` is 1).
+- A tick that renders the scene twice (the one-shot request path `0x10A15D40`, INFERRED screenshots) draws the list in its first render only (harness V1).
+- The draw follows the stock items' state of the last HUD loop: when the draw comes first in a tick, one tick late, as the stock items (harness V3).
+- Run 5's first 18.6 s in "mode 1" with `supp` flat (v3): cause not found (INFERRED the team-switch menu); under v4 the list is hidden whenever the loop does not update widget 18, as the stock chat.
+- Papers: `build\builder\ChatExe.cs` `383cac46` (v3: `ChatExe.cs.v3` `88f85393`), `build\builder\Program.cs` `b17accc2` (v3 + C-1: `Program.cs.v3` `25a48b28`), `build\builder\PeFile.cs` `ff1c0538` unchanged, `build\harness\Program.cs` `2a633fec` (v3: `Program.cs.v3` `2a12c285`), `build\gates\v4\run-gates-v4.ps1` `89f4ed57`, `build\gates\v4\coexist.py` `4e386d62`, `build\probe-v4\chat-state.ps1` `645ebf3d`, `README.md.prior-v4` `c6bed60e` (this file before the section). Work folder `scratch\v4\work` (tools and builds, 57 MB).
+
+## v4d: look + dead chat (M3epbuggin m8)
+
+v4d draws v4's list where the stock chat would be drawn and removes the game's own two dead-chat gates: the host sends a dead or spectating player's line to every player (delivery), and the chat widget runs, so the list is drawn, while dead, in the kill cam and while spectating (display). Built by V-2 on 2026-10-08 (brief `BRIEF-v4d.md`, notes `V4d-notes.md`; the gates were found by `Deploy\dead-chat-gate\G1-notes.md`, facts 1-25). Orders, in the operator's words: "can you simply remove the gate that stops the messages from being delivered when dead in the original code?" (2026-10-07); "relaunch a subagent to look into finding the gate that blocks dead players from sending and recieving messages"; "implement the dead chat fix, deploy both and launch map for test" (2026-10-08).
+
+| Item | Value |
+| --- | --- |
+| base | Community Edition 2026.10.07-1's SMOKE exe `4a17634fbebc1cb2c6b550cc35337d9f`, 7,712,768 B (`scratch\c1\base-4a17634f.exe`) |
+| build | `ChatExeBuild build <4a17634f> <out> --dead-chat 1 --stock-vis 1 --dead-show 1` (new switch `--dead-show 0|1`, default 0, refused without `--stock-vis 1`) |
+| result | `files-v4d\System\SCDA_Online.exe`, 7,725,056 B, md5 **`2f0cb988f58fe3989cef45f27996b414`**; replaces `4a17634f` |
+| v4 and default builds | unchanged: v4 `2724a697` (also with an explicit `--dead-show 0`), defaults `0fd28e5f` from `4a17634f` and `3fba79cf` from `0f1b2d1c` (patch.ps1 `5b46326a`, `91747510`, `35a5eb1b`) |
+| where it acts | delivery: on the HOST (listen host or dedicated server) only; display: on each player who runs it. Neither edit changes a replicated function, property or package (G1 fact 25: mixed installs play together, INFERRED) |
+| not done | no game was started and nothing was installed; v4d has not run in game |
+
+### Changes against Community Edition 2026.10.07-1 (rows that differ from v4)
+
+| # | File | Site | Stock | New | Purpose |
+| --- | --- | --- | --- | --- | --- |
+| 1-8, 10 | `System\SCDA_Online.exe` | as v4 | as v4 | as v4 (the `.chat` code is v4's byte for byte, md5 `1c639b42`) | the list, the stamp route |
+| 9 | same | VA `0x109B8B36` (file `0x0B8B36`), host `MessageManager.SimpleStringToTeam` `0x109B8680`, in-game branch | `8B 80` (`mov eax,[eax+0x408]` / `cmp eax,ebx` / `je 0x109B8BEA` / `cmp [eax+0x1580],ebx` / `jle 0x109B8BEA`: no pawn or Health <= 0 -> the line is dropped) | **`EB 18`** (`jmp short 0x109B8B50`, the receivers' loop; the other 24 bytes kept, unreached) = v3's row 9 | delivery gate removed (host) |
+| 11 | same | file `0x75C000..0x75DFFF`, `.chatd` | - | 0x2000 bytes (md5 `ce9edd8b934f4a5ca23cd0bba6d2c87c`) = v4's `.chatd` with one dword changed: `0x1114` K_DEADCHAT 0 -> **1**; data version stays 4 | constants and state |
+| 12 (new) | same | VA `0x10B816A8` (file `0x2816A8`): the imm32's low byte of `or dword [esi+0x34],0x802` at `0x10B816A5` in widget 18's ctor `0x10B81650` | `02` (`81 4E 34 02 08 00 00`, mask `0x802` = modes 1, 11) | **`33`** (`81 4E 34 33 08 00 00`, mask `0x833` = modes 0, 1, 4, 5, 11) | display gate removed: the HUD loop updates the chat widget (Suppress, the stamp) while dead (0), in the kill cam (4) and spectating (5) |
+
+- Byte diff v4 -> v4d: exactly 4 bytes, same length: file `0x0B8B36` `8B` -> `EB`, `0x0B8B37` `80` -> `18`, `0x2816A8` `02` -> `33`, `0x75D114` (`.chatd` +0x1114) `00` -> `01` (coexist F).
+- Against `4a17634f`: 42 bytes differ inside its length (v4's 39 + site 9's 2 + the mask byte), plus the 12,288 appended bytes. No base relocation covers either new site; CheckSum left as found.
+- The builder checks the base's `81 4E 34 02 08 00 00` at `0x10B816A5` before it writes the byte. `--dead-show` adds no code and no `.chatd` field: the static gate and the harness read the mask from the exe itself.
+
+### Gates (`build\gates\v4d\`, runner `run-gates-v4d.ps1 -Work scratch\v4d\work`, 2026-10-08 20:13 PC)
+
+| Gate | Result |
+| --- | --- |
+| `build.txt` | PASS: three v4d builds, one md5 (exe `2f0cb988`, its patch.ps1 `2fdd5fe7`, not delivered); v4 `2724a697` / `5b46326a` with and without `--dead-show 0` = `files-v4\`; defaults `0fd28e5f` / `3fba79cf` = `files-m4\` / `files\`; `--dead-show 1` without `--stock-vis 1` refused; `files-v4d\` = the build |
+| `gate.txt` (static) | ALL PASS, 83 checks: v4's 79 (site 9 now "patched: EB 18 = jmp short 0x109B8B50, the other 24 bytes main's"; the ctor range compared except the mask byte) plus 4 v4d checks: the mask instruction `or dword [esi+0x34],0x802` -> `0x833`, one byte, the ctor's other 62 instructions main's; the ctor's only access to `[esi+0x34]` is that `or` (after the base ctor `0x10B739A0` and the vtable store); the ctor has one caller (`0x10B7262B`, HUD builder) and no pointer, vtable `0x10F93090` stored only by it; no branch into the instruction, the mode test `0x10B73C90` reads `[+0x34]` live |
+| `gate-v4.txt`, `gate-defaults.txt` | PASS: v4's static gate with this builder = `build\gates\v4\gate.txt` (79 checks, 259 lines); the default builds' = C-1's (76 and 74) |
+| `harness.txt` | ALL PASS, 204 checks. R4 modes 1, 11, 0, 4, 5, 13, 3, 9, 2, 8, 7, 6, 12 (real HUD loop, real tail): drawn in 0, 1, 4, 5, 11 and 7, gate 12 in 13, 3, 9, 2, 8, 6, 12; G4 dead chat 1, modes 0, 4, 5 drawn, mode 6 hidden, mode 5 under a covering menu: gate 7, menu / node / toggle / zone gates and the list kept while hidden as v4; V with mode 6 as the hidden mode; L, K, O, T (T9 mode 0 and T10 mode 4 now drawn); X4d the REAL fan-out: the base's bytes (control) drop a dead sender (no pawn, Health 0), v4d's pass it (no pawn, Health 0, Health -25: 3 receivers; dead TEAMSAY: the team only), through the real SimpleStringToClient and add into all 3 MessageStacks, then the dead sender's own list draws it in modes 0, 4, 5 and keeps it hidden in 6; S4 the loop stamps in 0, 1, 4, 5, 11, 7; Q4 QolHud v3: drawn in 3, 9, 1, 11, 0, 4, 5 |
+| `harness-v4.txt`, `harness-defaults.txt` | PASS: v4 gives `build\gates\v4\harness.txt` (187 checks, 207 lines); the defaults give v3's transcripts (157 each) |
+| `coexist.txt` | ALL PASS, 60 checks (next section) |
+| `probe.txt` | PASS: `build\probe-v4\chat-state.ps1` on the harness's live `.chatd`: v4d header "dead chat (host) 1", "widget 18 mask 0x833 (modes 0 1 4 5 11) = v4d dead show", "dead-sender site 0x109B8B36 EB18 (stepped over)", mode 1 and mode 5 "vis 1" with "drawn", the menu gate; v4 still reads as before (mask `0x802`, site `8B80`, mode 5 "vis 0" with "stock chat not shown") |
+
+### Coexistence
+
+| With | Result |
+| --- | --- |
+| CE 2026.10.07-1's plugins (start logs) | v4d holds the base's bytes over every logged "ok" range and hook site; nearest v4d change: ObjHack 199 B (as v4), Modes 233 B (site 9 to its `0x109B8C20` hook), VentChain 12,465 B; the others over 300 KB |
+| Modes.asi | its handler still replays the base's 8 bytes at `0x109B8C20` (233 B after site 9); the receiver `0x109B8C20..0x109B8C4B`, the add and send-to-client are the base's; the fan-out `0x109B8680..0x109B8C19` differs only at site 9's 2 bytes. Its `.rdata` carries `00 00 8B 80 08 04 00 00` (8 of site 9's area's bytes) only inside a 40-B compare blob that matches the base at `0x10B7E11F` (its end-panel site), not at site 9 |
+| every plugin of CE 2026.10.07-1 and the channel (13) | no image-range dword inside `.chat` / `.chatd` or within 16 B of a change; around the two new sites no plugin carries a run of the base's bytes of 8 B or more except Modes' blob above; nearest compared range to the mask byte: Modes `0x10B7E280`, 13,333 B; to site 9: Modes `0x109B8C20`, 233 B |
+| QolHud v3 | its stub reads the live mask (bit 1 for normal-play widgets): with `0x833` it still answers in 3 and 9 (harness Q4); its three compared blocks equal the base |
+
+### Point 3 of the brief: what else could hide the list (report only)
+
+| Mode | v4d | Why | Status |
+| --- | --- | --- | --- |
+| 0 dead, 4 kill cam, 5 spectating | drawn | the stamp follows the live mask (the loop reads `[widget+0x34]` at `0x10B73C9D`); gate 12 passes. The forced-on node gate `[HUD+0x428]` and the zone flag `HUD+0x410` bit 0x10 were non-zero in these modes in game (v2, which always tested both, passed every gate in modes 0 and 4 in run 4 and 5 in run 3; v3 drew in 0 and 4 in run 5). The menu gate hides it only while a menu covers the HUD (run 4's quit dialog in mode 5), the toggle gate only with HUD_TOGGLE: both as the stock HUD render | harness VERIFIED; node / zone in these modes MEASURED (runs 3-5); in game with v4d not seen |
+| 6 end of game, 12 quit dialog | hidden (gate 12) | mask `0x833` has neither bit 6 nor bit 12: the loop takes widget 18's hide path, no stamp, as the stock chat; in 12 a covering dialog also trips the menu gate (7) | harness VERIFIED (R4 6 and 12, G4 6, X4d 6); the mode meanings are the brief's / G1's |
+| 7 | drawn | the loop updates every widget in mode 7 (as v4) | harness VERIFIED |
+| 3 drone, 9 scope | hidden; drawn with QolHud v3 | as v4 | harness VERIFIED |
+
+### Install, known limits, open
+
+- The channel's `M3CHAT` add-on (`"over": "SMOKE"`): its payload becomes `files-v4d\System\SCDA_Online.exe` (`2f0cb988`, replaces `4a17634f`). By hand: drag the contents of `files-v4d\` onto a Community Edition 2026.10.07-1 install root and choose replace. Dead chat needs it on the HOST; the list while dead needs it on that player.
+- In-game test to do: a dead player's typed line on the host's list (and, with a second player, on another machine); the list in modes 0, 4, 5 (probe `vis 1`, gate "drawn", `supp` rising one per frame); hidden at the end of the game and under the in-game menu / quit dialog; probe header shows mask `0x833` and site `EB18`.
+- The kill cam: run 5 (v3, which drew there too) saw the list's upper rows over the kill cam's two key hints (shot `r5-051s`); v4d draws there again.
+- v4's limits stand (a two-render tick draws in its first render only; one tick late when the draw comes first).
+- Papers: `build\builder\ChatExe.cs` `99e24306`, `PeFile.cs` `bd8470c6`, `Program.cs` `0786fe8c`, `build\harness\Program.cs` `60377b6b`, `build\probe-v4\chat-state.ps1` `46391cfa` (v4's each as `*.v4`: `383cac46`, `ff1c0538`, `b17accc2`, `2a633fec`, `645ebf3d`); `build\gates\v4d\run-gates-v4d.ps1` `344cafe1`, `coexist-v4d.py` `720429f3`; `README.md.prior-v4d` `5ecf8bb3` (this file before the section). Work folder `scratch\v4d\work` (56 MB).
+
 ## Build and papers
 
 | File | md5 (first 8) | What |
 | --- | --- | --- |
-| `build\builder\ChatExe.cs` | `88f85393` | v3: configuration, data layout, code (Iced assembler); v2 `ChatExe.cs.v2`, v1 `.v1` |
-| `build\builder\PeFile.cs` | `ff1c0538` | PE layout, the patch (3 sites), relocation reader; v2 `.v2` |
-| `build\builder\Program.cs` | `c8d40eb9` | `build`, `gate` (incl. the dead-site gate), `dis`; generates `patch.ps1` (with v2's and v1's change lists); v2 `.v2` |
+| `build\builder\ChatExe.cs` | `99e24306` | v3 + v4's `--stock-vis` (V-1b) + v4d's `--dead-show` (V-2; each emits nothing new without it): configuration, data layout, code (Iced assembler); v4 `ChatExe.cs.v4` (`383cac46`), v3 `ChatExe.cs.v3` (`88f85393`), v2 `ChatExe.cs.v2`, v1 `.v1` |
+| `build\builder\PeFile.cs` | `bd8470c6` | PE layout, the patch (3 sites, v4d a fourth: the mask byte), relocation reader; v4 `.v4` (`ff1c0538`), v2 `.v2` |
+| `build\builder\Program.cs` | `0786fe8c` | `build`, `gate` (incl. the dead-site gate; v4 adds the switch and stamp-route checks, v4d the mask-site checks), `dis`; generates `patch.ps1` (with v2's and v1's change lists); since C-1 it also accepts main 2026.10.02-4's `4a17634f` (section above); v4 `Program.cs.v4` (`b17accc2`), v3 + C-1 `Program.cs.v3` (`25a48b28`), v3 as built `Program.cs.pre-c1` (`c8d40eb9`), v2 `.v2` |
 | `build\builder\ChatExeBuild.csproj` | `7e9f2714` | net9.0, Iced 1.21.0 (unchanged) |
-| `build\harness\Program.cs`, `ChatHarness.csproj` | `2a12c285`, `91d5b127` | x86 harness v3 (`--hold N` keeps a live `.chatd` for the probe test); v2 `Program.cs.v2` |
+| `build\harness\Program.cs`, `ChatHarness.csproj` | `60377b6b`, `91d5b127` | x86 harness v3, v4 and v4d (a v4 exe runs the v4 set with the exe's own widget mask, a v3 exe exactly v3's; `--hold N` keeps a live `.chatd` for the probe test); v4 `Program.cs.v4` (`2a633fec`), v3 `Program.cs.v3` (`2a12c285`), v2 `Program.cs.v2` |
 | `build\gates\run-gates.ps1` | `f4881c7f` | all gates, offline builds; v2 `.v2`, v1 `.v1` |
 | `test\chat-state.ps1` | `fd950dd4` | read-only probe v3; v2 `chat-state.ps1.v2`, v1 `.v1` |
+| `build\gates\v4\run-gates-v4.ps1`, `coexist.py`; `build\probe-v4\chat-state.ps1` | `89f4ed57`, `4e386d62`; `46391cfa` | v4's gates and transcripts; the probe for v3, v4 and v4d (section "v4 look only on Community Edition 2026.10.07-1"; v4d adds the mask and dead-site readout to its header, v4's probe `chat-state.ps1.v4` `645ebf3d`) |
+| `build\gates\v4d\run-gates-v4d.ps1`, `coexist-v4d.py` | `344cafe1`, `720429f3` | v4d's gates and transcripts (section "v4d: look + dead chat (M3epbuggin m8)") |
 | `build\SCDA_Online.v2-b28c9113.exe`, `build\SCDA_Online.v1-c4f50a7f.exe` | `b28c9113`, `c4f50a7f` | the exes of v2 and v1, kept (rule 4) |
 | `README.md.v2`, `DEPLOY-NOTICE.txt.v2`, `patch.ps1.v2`, `build\gates\v2\` | - | v2's papers and gate transcripts |
 
@@ -223,6 +395,9 @@ Counters: `dup` = records seen again and skipped (an earlier MessageManager read
 | CL-5 | exe v2 `b28c9113`: v1's list logic, own canvas overlay after the HUD, stock widget suppressed | run 3: WORKS alive; run 4: dead chat never arrived, the list emptied at a menu |
 | CL-6 | v3 | cut off by the session limit at its first step, wrote nothing |
 | CL-7 | exe v3 `3fba79cf`: the host's dead-sender test stepped over; owners, clock and capture that survive a menu, a respawn, a team switch and a new level; the menu gate off; probe instruments | built, gates pass (0 FAIL), not run in game |
+| C-1 | v3 rebuilt on main 2026.10.02-4's `4a17634f` (`0fd28e5f`) | built, gates pass |
+| V-1 / V-1b | exe v4 `2724a697` on CE 2026.10.07-1: v3's look, drawn only where the stock chat is (stamp of the HUD loop), no dead chat | V-1 paused at its first step; V-1b built it, gates pass (0 FAIL), not run in game |
+| V-2 | exe v4d `2f0cb988` on CE 2026.10.07-1: v4 + the host's dead-sender test stepped over + widget 18's mask `0x833` (the list while dead, in the kill cam, spectating) | built, gates pass (0 FAIL), not run in game |
 
 ## Test log
 
