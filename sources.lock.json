@@ -53,6 +53,10 @@
    "sha256": "318e71bd571eb72c1d45f6b97a9424fd708cf984597fa9e4eb3ef5f572fec814",
    "size": 7725056
   },
+  "sources/SCDA_Online.exe.deadchat.m9": {
+   "sha256": "fb94c956cd2f7b0c86388b2fd6e7abe21c8e312bc753a8d6f569e06e2a9e8d94",
+   "size": 7712768
+  },
   "sources/SniperHeadshotSound.v2.asi": {
    "sha256": "2d1d5f85f8ba886d619ee5314fac6e6cd0f5a481d23702b34da924d0cd31e285",
    "size": 8704

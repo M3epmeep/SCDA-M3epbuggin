@@ -4,7 +4,7 @@
 
 ## Download the launcher
 
-**[M3eptemp 3.21.20261007](https://github.com/M3epmeep/SCDA-M3epbuggin/releases/tag/m3eptemp-v3.21.20261007)** (its own release in this repository):
+**[M3eptemp 3.21.20261009](https://github.com/M3epmeep/SCDA-M3epbuggin/releases/tag/m3eptemp-v3.21.20261009)** (its own release in this repository):
 
 - [`M3eptemp.exe`](https://github.com/M3epmeep/SCDA-M3epbuggin/releases/latest/download/M3eptemp.exe): the launcher window
 - [`M3eptemp-cli.exe`](https://github.com/M3epmeep/SCDA-M3epbuggin/releases/latest/download/M3eptemp-cli.exe): the same launcher on the command line
@@ -13,18 +13,17 @@ M3eptemp is a separate copy of SYNCADE's SCDA Launcher 3.21 with one more versio
 
 ## What it changes
 
-Version `2026.10.07-m8`, on top of Community Edition 2026.10.07-1:
+Version `2026.10.09-m9`, on top of Community Edition 2026.10.07-1:
 
 | Code | Feature | What it does | Files |
 | --- | --- | --- | --- |
-| `M3CHAT` | Chat as a list | The chat at the bottom left is a plain list of up to 8 messages, the newest at the bottom, each fading out after 10 seconds, with no frame. It shows where the normal chat shows and also while you are dead, in the kill cam and spectating (with `M3QHUD` also in the drone and the scope). Dead players can chat: on the host, their lines reach everyone. | `System\SCDA_Online.exe` (replaced, while this is on; built on Community Edition 2026.10.07-1's own exe, so its changes stay) |
+| `M3CHAT` | Dead players can chat | On the host, a dead player's lines reach everyone, and the normal chat also shows while you are dead, in the kill cam and spectating. The game's own chat look is kept. | `System\SCDA_Online.exe` (replaced, while this is on; Community Edition 2026.10.07-1's own exe with the game's two dead-chat gates removed, 3 bytes, so its other changes stay) |
 | `M3QHUD` | HUD stays on in the drone and the scope | A merc looking through the scope or flying the drone keeps the normal HUD (timer, zone name, score, gadgets, messages), drawn on top of the view. | `System\QolHud.asi` (added) |
-| `M3SNHS` | Sniper headshot sound | When a merc kills a spy with a scoped headshot, a short ding plays where the spy fell, heard within 10 metres. | `System\SniperHeadshotSound.asi` (added). The ding itself is already in Community Edition's own `MAPS.SM0` (since 2026.10.02-3), so nothing is replaced |
 | `M3SGRB` | Spy grab: end of the spin, wall stagger and stairs | A spy can grab a merc in the last half second of the berserk spin, during the whole stagger after a wall sprint, and on stairs. | `System\SpyGrab.asi`, `System\SpyGrab.ini` (added) |
 | `M3NECK` | QOL4Necks | A spy can neck a merc in the middle of a jump and right after he lands, and an interact press next to a light switch or other object necks a merc in reach first. | `System\QOL4Necks.asi`, `System\QOL4Necks.ini` (added) |
 | `M3RBZK` | Root berzerk | A merc who sprints into a wall can start the berserk spin at any moment of the stagger, instead of the key being swallowed until the stagger ends. Same button, cooldown, reload and crouch rules as the normal spin. Only the merc's own PC needs it; bots stay stock. | `System\RootBerzerk.asi`, `System\RootBerzerk.ini` (added) |
 
-m2 held the sniper headshot sound back on Community Edition 2026.10.02-3 and later (it shipped its own `MAPS.SM0`, which Club House and Warehouse now own). m3 ships the plugin alone and installs all five. m4 adds the no-mic fix and moves to Community Edition 2026.10.02-5, which changes the launcher only; the five other add-ons are the same files as in m3. m5 adds the join crash fix; the six other add-ons are the same files as in m4. m6 adds root berzerk; the seven other add-ons are the same files as in m5. m7 adds the Modes crash fix; the eight other add-ons are the same files as in m6. m8 moves to Community Edition 2026.10.07-1 and M3eptemp 3.21.20261007, rebuilds the chat list on the game's own rules (it shows where the normal chat shows; dead players' chat now comes from removing the game's own two dead-chat gates, a 3-byte change, instead of the list's own always-on display), and takes the no-mic fix (`M3NMIC`), the join crash fix (`M3RHUD`) and the Modes crash fix (`M3MODF`) out; M3eptemp 3.21.20261007 removes those three from an install on the next update or PLAY and puts Community Edition's own `Modes.asi` back. The five other add-ons are the same files as in m7.
+m2 held the sniper headshot sound back on Community Edition 2026.10.02-3 and later (it shipped its own `MAPS.SM0`, which Club House and Warehouse now own). m3 ships the plugin alone and installs all five. m4 adds the no-mic fix and moves to Community Edition 2026.10.02-5, which changes the launcher only; the five other add-ons are the same files as in m3. m5 adds the join crash fix; the six other add-ons are the same files as in m4. m6 adds root berzerk; the seven other add-ons are the same files as in m5. m7 adds the Modes crash fix; the eight other add-ons are the same files as in m6. m8 moves to Community Edition 2026.10.07-1 and M3eptemp 3.21.20261007, rebuilds the chat list on the game's own rules (it shows where the normal chat shows; dead players' chat now comes from removing the game's own two dead-chat gates, a 3-byte change, instead of the list's own always-on display), and takes the no-mic fix (`M3NMIC`), the join crash fix (`M3RHUD`) and the Modes crash fix (`M3MODF`) out; M3eptemp 3.21.20261007 removes those three from an install on the next update or PLAY and puts Community Edition's own `Modes.asi` back. The five other add-ons are the same files as in m7. m9 keeps five features: the chat list's look and the sniper headshot sound (`M3SNHS`) go out, `M3CHAT` now ships Community Edition's exe with only the two dead-chat gates removed, and M3eptemp 3.21.20261009 removes the sniper headshot sound from an install on the next update or PLAY (3.21.20261007 leaves it installed). The four plugin add-ons are the same files as in m8. The releases of m1-m8 were removed from this repository when m9 was published.
 
 Each feature's own change log, as its builder wrote it, is in [`features/`](features/) (`README.md`, and `FINDINGS.md` where there is one). Paths in those files point into the builder's workspace, not into this repository.
 
@@ -34,7 +33,7 @@ Each feature's own change log, as its builder wrote it, is in [`features/`](feat
 2. Give it a game folder of its own. Press **PLAY** and let it download Community Edition into a new folder you pick, or open **Settings -> Game folder -> Browse** and choose a Community Edition copy that no other launcher looks after. M3eptemp keeps its own records of the files it installs, so it should not share a folder with the official launcher.
 3. Under VERSION pick **M3epbuggin** and press **PLAY**. The launcher brings Community Edition up to date, then installs this channel's add-ons, checks the game files and starts the game.
 
-**Every player in a match needs it.** Most of it works across the network: the spy grab needs the file on the host (who grants the grab) and on the spy's machine (which shows the prompt), the headshot ding is sent by the host's plugin and played from every player's own sound bank, and dead players' chat goes out from the host's exe. The chat list's look and the HUD change are purely on your own screen.
+**Every player in a match needs it.** Most of it works across the network: the spy grab needs the file on the host (who grants the grab) and on the spy's machine (which shows the prompt), and dead players' chat goes out from the host's exe. Showing chat while dead and the HUD change are purely on your own screen.
 
 **Your key bindings are shared.** Every SCDA install reads the same player profiles. Like the official launcher 3.21, M3eptemp adds the bindings an add-on needs (for example push-to-talk) and removes the bindings of retired add-ons (`CoopMove`, `CoopKey`, `NoLight`) in those profiles.
 
@@ -121,4 +120,4 @@ git commit -m "roll back to <version>"
 git push
 ```
 
-Bundles are complete snapshots measured against stock, so going back needs nothing else.
+Bundles are complete snapshots measured against stock, so going back needs nothing else, as long as that version's release is still here: the releases of m1-m8 were removed on 2026-10-09, so going back to one of them means publishing it again.

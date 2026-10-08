@@ -25,13 +25,13 @@
    "enabled": true,
    "kind": "files",
    "code": "M3CHAT",
-   "title": "Chat as a list",
-   "notes": "The chat at the bottom left is a plain list of up to 8 messages, the newest at the bottom, each fading out after 10 seconds, with no frame. It shows where the normal chat shows and also while you are dead, in the kill cam and spectating (with the HUD add-on also in the drone and the scope); on the host, dead players' chat reaches everyone.",
-   "_status": "chat-list v4d (m8): v4's list on Community Edition 2026.10.07-1's SMOKE exe md5 4a17634f, built --dead-chat 1 --stock-vis 1 --dead-show 1: drawn only in the frames the stock chat widget runs, and the game's own two dead-chat gates removed (host fan-out 0x109B8B36 8B 80 -> EB 18; widget 18 mode mask 0x10B816A8 02 -> 33 = modes 0, 1, 4, 5, 11; Deploy\\dead-chat-gate). Result md5 2f0cb988f58fe3989cef45f27996b414, 7,725,056 B (v4 2724a697 + 4 bytes); static gate 83/83, harness 204/204, coexistence 60/0 (Deploy\\chat-list\\build\\gates\\v4d). m3-m7 shipped v3 0fd28e5f; m1/m2 3fba79cf on 0f1b2d1c.",
+   "title": "Dead players can chat",
+   "notes": "Dead players can chat: on the host, a dead player's lines reach everyone, and the normal chat also shows while you are dead, in the kill cam and spectating. The game's own chat look is kept.",
+   "_status": "dead-chat-gate (m9): Community Edition 2026.10.07-1's SMOKE exe md5 4a17634f with the game's own two dead-chat gates removed, 3 bytes (host fan-out 0x109B8B36 8B 80 -> EB 18; widget 18 mode mask 0x10B816A8 02 -> 33 = modes 0, 1, 4, 5, 11; Deploy\\dead-chat-gate). Result md5 f61d28a45b375a6d3f4e3a49884475c8, 7,712,768 B. No chat list: m8 shipped chat-list v4d 2f0cb988 (the list + the same 3 bytes), m3-m7 v3 0fd28e5f, m1/m2 3fba79cf on 0f1b2d1c.",
    "files": [
     {
      "install_path": "System/SCDA_Online.exe",
-     "source": "sources/SCDA_Online.exe.chatlist4d.m8",
+     "source": "sources/SCDA_Online.exe.deadchat.m9",
      "force_full": true,
      "over": "SMOKE"
     }
@@ -48,21 +48,6 @@
     {
      "install_path": "System/QolHud.asi",
      "source": "sources/QolHud.v3.asi",
-     "force_full": true
-    }
-   ]
-  },
-  {
-   "enabled": true,
-   "kind": "files",
-   "code": "M3SNHS",
-   "title": "Sniper headshot sound",
-   "notes": "When a merc kills a spy with a scoped headshot, a short ding plays where the spy fell, heard within 10 metres. The host needs the plugin; the ding itself is in Community Edition's own sound bank (MAPS.SM0 of Club House and Warehouse, since 2026.10.02-3).",
-   "_status": "sniper-headshot-sound v3 (m3): the plugin only, SniperHeadshotSound.asi md5 9e9dcfc0. The Ding sample and its 10 m range ride in main's CLUBEX MAPS.SM0 (f6f129b7 in 2026.10.02-3: turret cue sample = the Ding, parameter 7 = 10.0), so this channel ships and replaces no bank. v2 (m1, m2) shipped MAPS.SM0 e681dfbd as a delta on stock d8e31526.",
-   "files": [
-    {
-     "install_path": "System/SniperHeadshotSound.asi",
-     "source": "sources/SniperHeadshotSound.v2.asi",
      "force_full": true
     }
    ]
@@ -128,7 +113,7 @@
   }
  ],
  "_retired": {
-  "_why": "Dropped from M3epbuggin 2026.10.07-m8 on the operator's order of 2026-10-07 (\"remove the no mic guard\" / \"take out the two fixes as well\"). M3eptemp 3.21.20261007 names the three codes in channels.RETIRED[\"m3epbuggin\"] and their published hashes in RETIRED_SHA256, so an installed copy is taken out on the next update or PLAY (Modes.asi: MAPOBJ's own comes back). Kept here only as the record of what was shipped.",
+  "_why": "Dropped from M3epbuggin 2026.10.07-m8 on the operator's order of 2026-10-07 (\"remove the no mic guard\" / \"take out the two fixes as well\"). M3eptemp 3.21.20261007 names the three codes in channels.RETIRED[\"m3epbuggin\"] and their published hashes in RETIRED_SHA256, so an installed copy is taken out on the next update or PLAY (Modes.asi: MAPOBJ's own comes back). Kept here only as the record of what was shipped. M3SNHS (sniper headshot sound) dropped from M3epbuggin 2026.10.09-m9 on the operator's order of 2026-10-09 (\"exactly the five\"); M3eptemp 3.21.20261009 names it in channels.RETIRED[\"m3epbuggin\"] and its one published hash 2d1d5f85 in RETIRED_SHA256.",
   "addons": [
    {
     "enabled": true,
@@ -173,6 +158,21 @@
       "source": "sources/Modes.namescanfix.asi",
       "force_full": true,
       "over": "MAPOBJ"
+     }
+    ]
+   },
+   {
+    "enabled": true,
+    "kind": "files",
+    "code": "M3SNHS",
+    "title": "Sniper headshot sound",
+    "notes": "When a merc kills a spy with a scoped headshot, a short ding plays where the spy fell, heard within 10 metres. The host needs the plugin; the ding itself is in Community Edition's own sound bank (MAPS.SM0 of Club House and Warehouse, since 2026.10.02-3).",
+    "_status": "sniper-headshot-sound v3 (m3): the plugin only, SniperHeadshotSound.asi md5 9e9dcfc0. The Ding sample and its 10 m range ride in main's CLUBEX MAPS.SM0 (f6f129b7 in 2026.10.02-3: turret cue sample = the Ding, parameter 7 = 10.0), so this channel ships and replaces no bank. v2 (m1, m2) shipped MAPS.SM0 e681dfbd as a delta on stock d8e31526.",
+    "files": [
+     {
+      "install_path": "System/SniperHeadshotSound.asi",
+      "source": "sources/SniperHeadshotSound.v2.asi",
+      "force_full": true
      }
     ]
    }
