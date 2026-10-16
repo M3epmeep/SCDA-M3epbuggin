@@ -814,6 +814,14 @@ def build(args):
     builder = Builder(cfg, install)
     addons = [builder.add_any(a) for a in enabled]
 
+    # A catalogue may hold launchers below a version off its releases, e.g. when the
+    # main release these add-ons are measured on needs that launcher itself.
+    wanted = cfg.get("min_launcher")
+    if wanted:
+        ver = lambda v: tuple(int(x) for x in str(v).split("."))
+        if not builder.min_launcher or ver(wanted) > ver(builder.min_launcher):
+            builder.min_launcher = str(wanted)
+
     # the engine build is worth reporting on even though nothing is patched from it
     exe = "System/SCDA_Online.exe"
     if exe in cfg.get("baseline_sources", {}):

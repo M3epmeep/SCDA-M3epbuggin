@@ -16,6 +16,7 @@
   "only one of the two (README.md: remove Experimental's first)."
  ],
  "track": "m3epbuggin",
+ "min_launcher": "3.22",
  "name": "SCDA Community Edition -- M3epbuggin test build",
  "inherit": "slots.json",
  "voice_server": null,
@@ -25,95 +26,26 @@
    "enabled": true,
    "kind": "files",
    "code": "M3CHAT",
-   "title": "Dead players can chat",
-   "notes": "Dead players can chat: on the host, a dead player's lines reach everyone, and the normal chat also shows while you are dead, in the kill cam and spectating. The game's own chat look is kept.",
-   "_status": "dead-chat-gate (m9): Community Edition 2026.10.07-1's SMOKE exe md5 4a17634f with the game's own two dead-chat gates removed, 3 bytes (host fan-out 0x109B8B36 8B 80 -> EB 18; widget 18 mode mask 0x10B816A8 02 -> 33 = modes 0, 1, 4, 5, 11; Deploy\\dead-chat-gate). Result md5 f61d28a45b375a6d3f4e3a49884475c8, 7,712,768 B. No chat list: m8 shipped chat-list v4d 2f0cb988 (the list + the same 3 bytes), m3-m7 v3 0fd28e5f, m1/m2 3fba79cf on 0f1b2d1c.",
+   "title": "Chat -- lines at once, no boxes; dead players can chat",
+   "notes": "The bottom-left chat shows each line at once as plain text: no slide-in, no background box, no icon, newest at the bottom, rows one line apart. Dead players can chat: on the host, a dead player's lines reach everyone, and the chat also shows while you are dead, in the kill cam and spectating.",
+   "_status": "chat-list lean (m10): Community Edition 2026.10.11-3's SMOKE exe (sha256 8cd78553, md5 ceb13a00) + the chat look (18 bytes in widget 18: row table, open-curve loads, icon jump, show wait, newest-first layout, close pose) + dead-chat-gate (3 bytes: host fan-out 0x109B8B36 8B 80 -> EB 18; widget 18 mode mask 0x10B816A8 02 -> 33). Result md5 039f3948a11b0ab0093bbf8787f9c941, 7,712,768 B; no byte of the 21 within 64 B of a 10.11-3 SMOKE change or of a reference in its 7 plugins. Interface_stm.usx md5 91c890cd = stock 1221f8f9 with the 9 UH_mess meshes' background and icon slots set to Mat_S_none (18 bytes). The same 21 + 18 bytes ran in game on CE 2026.10.07-1 on 2026-10-16 (operator: \"chat works\"). Earlier: m9 dead-chat-gate only f61d28a4; m8 chat-list v4d 2f0cb988; m3-m7 v3 0fd28e5f; m1/m2 3fba79cf.",
    "files": [
     {
      "install_path": "System/SCDA_Online.exe",
-     "source": "sources/SCDA_Online.exe.deadchat.m9",
+     "source": "sources/SCDA_Online.exe.chatlean.m10",
      "force_full": true,
      "over": "SMOKE"
-    }
-   ]
-  },
-  {
-   "enabled": true,
-   "kind": "files",
-   "code": "M3QHUD",
-   "title": "HUD stays on in the drone and the scope",
-   "notes": "A merc looking through the scope or flying the drone keeps the normal HUD (timer, zone name, score, gadgets, messages), drawn on top of the view.",
-   "_status": "qol-hud v3 (QolHud.asi md5 722365f7). Adds one plugin, replaces nothing; settings optional in Enhanced.ini [QOLHUD].",
-   "files": [
-    {
-     "install_path": "System/QolHud.asi",
-     "source": "sources/QolHud.v3.asi",
-     "force_full": true
-    }
-   ]
-  },
-  {
-   "enabled": true,
-   "kind": "files",
-   "code": "M3SGRB",
-   "title": "Spy grab -- end of the spin, wall stagger and stairs",
-   "notes": "A spy can grab a merc in the last half second of the berserk spin, during the whole stagger after a wall sprint, and on stairs. Every player needs it.",
-   "_status": "spy-grab-merc v2 (Experimental x40). SpyGrab.asi md5 ca67503e, SpyGrab.ini md5 36c34fa4.",
-   "files": [
-    {
-     "install_path": "System/SpyGrab.asi",
-     "source": "sources/SpyGrab.v2.asi",
-     "force_full": true
     },
     {
-     "install_path": "System/SpyGrab.ini",
-     "source": "sources/SpyGrab.v2.ini",
-     "force_full": true
-    }
-   ]
-  },
-  {
-   "enabled": true,
-   "kind": "files",
-   "code": "M3NECK",
-   "title": "QOL4Necks -- neck a jumping or landing merc, neck before switches",
-   "notes": "A spy can neck a merc in the middle of a jump and right after he lands, and an interact press next to a light switch or other object necks a merc in reach first.",
-   "files": [
-    {
-     "install_path": "System/QOL4Necks.asi",
-     "source": "sources/QOL4Necks.asi",
-     "force_full": true
-    },
-    {
-     "install_path": "System/QOL4Necks.ini",
-     "source": "sources/QOL4Necks.ini",
-     "force_full": true
-    }
-   ]
-  },
-  {
-   "enabled": true,
-   "kind": "files",
-   "code": "M3RBZK",
-   "title": "Root berzerk -- spin out of the wall stagger",
-   "notes": "A merc who sprints into a wall can start the berserk spin at any moment of the stagger instead of having the key swallowed until it ends. Same button, same 1.5 s cooldown, same reload and crouch rules as the stock spin. Only the merc's own PC needs it; bots stay stock.",
-   "_status": "root-berzerk v2 (m6): RootBerzerk.asi md5 fa93639a, one in-memory hook of 7 bytes at 0x10BC7A29 (tail of MercWaitForSprintBump.PlayerTick), byte-checked at load; role test RemoteRole != 3 (v1 fdac01a0 had it inverted and never spun). RootBerzerk.ini md5 218858ae (Enabled=1 Bump=0 Log=1). Static gate 121 PASS 0 FAIL and harness 945 checks 0 FAIL on 0fd28e5f, fc237f82, 4a17634f, 0f1b2d1c, 4dccc646; no overlap with the channel's other plugins. Not yet seen running in game.",
-   "files": [
-    {
-     "install_path": "System/RootBerzerk.asi",
-     "source": "sources/RootBerzerk.asi",
-     "force_full": true
-    },
-    {
-     "install_path": "System/RootBerzerk.ini",
-     "source": "sources/RootBerzerk.ini",
+     "install_path": "Packages/_Common/StaticMeshes/Interface_stm.usx",
+     "source": "sources/Interface_stm.usx.chatlean.m10",
      "force_full": true
     }
    ]
   }
  ],
  "_retired": {
-  "_why": "Dropped from M3epbuggin 2026.10.07-m8 on the operator's order of 2026-10-07 (\"remove the no mic guard\" / \"take out the two fixes as well\"). M3eptemp 3.21.20261007 names the three codes in channels.RETIRED[\"m3epbuggin\"] and their published hashes in RETIRED_SHA256, so an installed copy is taken out on the next update or PLAY (Modes.asi: MAPOBJ's own comes back). Kept here only as the record of what was shipped. M3SNHS (sniper headshot sound) dropped from M3epbuggin 2026.10.09-m9 on the operator's order of 2026-10-09 (\"exactly the five\"); M3eptemp 3.21.20261009 names it in channels.RETIRED[\"m3epbuggin\"] and its one published hash 2d1d5f85 in RETIRED_SHA256.",
+  "_why": "Dropped from M3epbuggin 2026.10.07-m8 on the operator's order of 2026-10-07 (\"remove the no mic guard\" / \"take out the two fixes as well\"). M3eptemp 3.21.20261007 names the three codes in channels.RETIRED[\"m3epbuggin\"] and their published hashes in RETIRED_SHA256, so an installed copy is taken out on the next update or PLAY (Modes.asi: MAPOBJ's own comes back). Kept here only as the record of what was shipped. M3SNHS (sniper headshot sound) dropped from M3epbuggin 2026.10.09-m9 on the operator's order of 2026-10-09 (\"exactly the five\"); M3eptemp 3.21.20261009 names it in channels.RETIRED[\"m3epbuggin\"] and its one published hash 2d1d5f85 in RETIRED_SHA256. M3QHUD (HUD in the drone and the scope), M3SGRB (spy grab), M3NECK (QOL4Necks) and M3RBZK (root berzerk) dropped from M3epbuggin 2026.10.16-m10 on the operator's order of 2026-10-16 (\"update the git of the m3ep version that only adds the chat features\" / \"and other than that is identical to the current main?\"); M3eptemp 3.22.20261016 names them in channels.RETIRED[\"m3epbuggin\"] and their published hashes in RETIRED_SHA256.",
   "addons": [
    {
     "enabled": true,
@@ -172,6 +104,80 @@
      {
       "install_path": "System/SniperHeadshotSound.asi",
       "source": "sources/SniperHeadshotSound.v2.asi",
+      "force_full": true
+     }
+    ]
+   },
+   {
+    "enabled": true,
+    "kind": "files",
+    "code": "M3QHUD",
+    "title": "HUD stays on in the drone and the scope",
+    "notes": "A merc looking through the scope or flying the drone keeps the normal HUD (timer, zone name, score, gadgets, messages), drawn on top of the view.",
+    "_status": "qol-hud v3 (QolHud.asi md5 722365f7). Adds one plugin, replaces nothing; settings optional in Enhanced.ini [QOLHUD].",
+    "files": [
+     {
+      "install_path": "System/QolHud.asi",
+      "source": "sources/QolHud.v3.asi",
+      "force_full": true
+     }
+    ]
+   },
+   {
+    "enabled": true,
+    "kind": "files",
+    "code": "M3SGRB",
+    "title": "Spy grab -- end of the spin, wall stagger and stairs",
+    "notes": "A spy can grab a merc in the last half second of the berserk spin, during the whole stagger after a wall sprint, and on stairs. Every player needs it.",
+    "_status": "spy-grab-merc v2 (Experimental x40). SpyGrab.asi md5 ca67503e, SpyGrab.ini md5 36c34fa4.",
+    "files": [
+     {
+      "install_path": "System/SpyGrab.asi",
+      "source": "sources/SpyGrab.v2.asi",
+      "force_full": true
+     },
+     {
+      "install_path": "System/SpyGrab.ini",
+      "source": "sources/SpyGrab.v2.ini",
+      "force_full": true
+     }
+    ]
+   },
+   {
+    "enabled": true,
+    "kind": "files",
+    "code": "M3NECK",
+    "title": "QOL4Necks -- neck a jumping or landing merc, neck before switches",
+    "notes": "A spy can neck a merc in the middle of a jump and right after he lands, and an interact press next to a light switch or other object necks a merc in reach first.",
+    "files": [
+     {
+      "install_path": "System/QOL4Necks.asi",
+      "source": "sources/QOL4Necks.asi",
+      "force_full": true
+     },
+     {
+      "install_path": "System/QOL4Necks.ini",
+      "source": "sources/QOL4Necks.ini",
+      "force_full": true
+     }
+    ]
+   },
+   {
+    "enabled": true,
+    "kind": "files",
+    "code": "M3RBZK",
+    "title": "Root berzerk -- spin out of the wall stagger",
+    "notes": "A merc who sprints into a wall can start the berserk spin at any moment of the stagger instead of having the key swallowed until it ends. Same button, same 1.5 s cooldown, same reload and crouch rules as the stock spin. Only the merc's own PC needs it; bots stay stock.",
+    "_status": "root-berzerk v2 (m6): RootBerzerk.asi md5 fa93639a, one in-memory hook of 7 bytes at 0x10BC7A29 (tail of MercWaitForSprintBump.PlayerTick), byte-checked at load; role test RemoteRole != 3 (v1 fdac01a0 had it inverted and never spun). RootBerzerk.ini md5 218858ae (Enabled=1 Bump=0 Log=1). Static gate 121 PASS 0 FAIL and harness 945 checks 0 FAIL on 0fd28e5f, fc237f82, 4a17634f, 0f1b2d1c, 4dccc646; no overlap with the channel's other plugins. Not yet seen running in game.",
+    "files": [
+     {
+      "install_path": "System/RootBerzerk.asi",
+      "source": "sources/RootBerzerk.asi",
+      "force_full": true
+     },
+     {
+      "install_path": "System/RootBerzerk.ini",
+      "source": "sources/RootBerzerk.ini",
       "force_full": true
      }
     ]

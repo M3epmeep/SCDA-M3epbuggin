@@ -1,6 +1,10 @@
 {
  "_comment": "Every file under sources/ and stock/ that the catalogue names, by sha256. The bytes live as assets of the 'sources' release, named by their sha256. Written by `python m3ep.py add`; read by `python m3ep.py fetch`, `upload` and `check`.",
  "files": {
+  "sources/Interface_stm.usx.chatlean.m10": {
+   "sha256": "41068d99d1181a7c07706292e82b4dded00dab12ea60290336e6efe7e3cc64b7",
+   "size": 5302748
+  },
   "sources/MAPS.snhs2.SM0": {
    "sha256": "856c13d2f2d9cafa2fbeaefa62ce8ba1d0c83b9a697bab5996037189bfe52d89",
    "size": 182933888
@@ -36,6 +40,10 @@
   "sources/RootBerzerk.ini": {
    "sha256": "e86b3177cb1b62ea4ae8503bde7f0cb7e4faeda1f1c9e37e12f77992da71d058",
    "size": 116
+  },
+  "sources/SCDA_Online.exe.chatlean.m10": {
+   "sha256": "d52dddde3166bdbd33d2135cafa62de50a7da0a7f0110c2c63e31dd04ffcb9aa",
+   "size": 7712768
   },
   "sources/SCDA_Online.exe.chatlist3": {
    "sha256": "fc1e301e7bf17f7d8d88a4b961afaee55dc380bd3e71b383cd0cd55a0bf92ad4",
