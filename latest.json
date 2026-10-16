@@ -1,37 +1,18 @@
 {
   "track": "m3epbuggin",
-  "version": "2026.10.09-m9",
-  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.09-m9/scda-ce-m3ep-2026.10.09-m9.scdaupd",
-  "sha256": "fdc876f21a8dd44b74c753c891a546cb384cab1bdbc46fbe3141bf0f953738ea",
-  "size": 2962285,
-  "notes": "Five features on Community Edition 2026.10.07-1: dead players can chat (with the game's own chat look), HUD in the drone and the scope, spy grab, QOL4Necks, root berzerk. The chat list and the sniper headshot sound are taken out; M3eptemp 3.21.20261009 removes the sniper headshot sound on the next update or PLAY.",
-  "released": "2026-10-08T23:17:11Z",
+  "version": "2026.10.16-m10",
+  "bundle_url": "https://github.com/M3epmeep/SCDA-M3epbuggin/releases/download/m3ep-v2026.10.16-m10/scda-ce-m3ep-2026.10.16-m10.scdaupd",
+  "sha256": "d5b052238b4b82f417f8b200cc7121112151bffc42490029f951ba7b4871a19f",
+  "size": 4549329,
+  "notes": "Chat only, on Community Edition 2026.10.11-3: chat lines appear at once as plain text (no slide-in, no boxes), and dead players can chat; everything else is Community Edition 2026.10.11-3 as it is. HUD, spy grab, QOL4Necks and root berzerk are taken out; needs M3eptemp 3.22.20261016.",
+  "released": "2026-10-16T17:04:08Z",
   "addons": [
     {
       "code": "M3CHAT",
-      "title": "Dead players can chat",
-      "kind": "files"
-    },
-    {
-      "code": "M3QHUD",
-      "title": "HUD stays on in the drone and the scope",
-      "kind": "files"
-    },
-    {
-      "code": "M3SGRB",
-      "title": "Spy grab -- end of the spin, wall stagger and stairs",
-      "kind": "files"
-    },
-    {
-      "code": "M3NECK",
-      "title": "QOL4Necks -- neck a jumping or landing merc, neck before switches",
-      "kind": "files"
-    },
-    {
-      "code": "M3RBZK",
-      "title": "Root berzerk -- spin out of the wall stagger",
+      "title": "Chat -- lines at once, no boxes; dead players can chat",
       "kind": "files"
     }
   ],
-  "min_patcher": 3
+  "min_patcher": 3,
+  "min_launcher": "3.22"
 }
