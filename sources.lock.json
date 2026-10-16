@@ -41,6 +41,10 @@
    "sha256": "e86b3177cb1b62ea4ae8503bde7f0cb7e4faeda1f1c9e37e12f77992da71d058",
    "size": 116
   },
+  "sources/SCDA_Online.exe.chathud.m11": {
+   "sha256": "6c87897c849b5c5de888f059102d08fd218cca40d8f7a1bc78cb5531be0b4af7",
+   "size": 7712768
+  },
   "sources/SCDA_Online.exe.chatlean.m10": {
    "sha256": "d52dddde3166bdbd33d2135cafa62de50a7da0a7f0110c2c63e31dd04ffcb9aa",
    "size": 7712768

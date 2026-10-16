@@ -1,332 +1,200 @@
-# qol-hud
+# qol-hud (lean)
 
-The normal HUD (timer, zone name, score, gadgets, radar objects, messages, status displays) stays on screen while a merc looks through the drone or through the scope, drawn on top of that view's own overlay instead of vanishing or being covered until the view is left.
+> **In M3epbuggin 2026.10.16-m11** as part of `M3CHAT`, on the same exe as the chat (`features/chat-list/`, `features/dead-chat-gate/`): rows 1-21 below, with rows 18, 19 and 21 moved for Community Edition 2026.10.11-3 (section "On Community Edition 2026.10.11-3" at the end), plus row C, the chat's mode mask `0x10B816A8` `33` -> `3B` (open question 1 below), applied to m10's `M3CHAT` exe (md5 `039f3948`), giving md5 `0e863bf75751c01f24f31299758386e1`. It ran in game on the test version on 2026-10-16. The change log below was measured on Community Edition 2026.10.07-1 (exe `4a17634f`). It replaces plugin v3 (`QolHud.asi`, `M3QHUD` up to m9), whose measured facts stay in `FINDINGS.md`. Paths point into the builder's workspace, not into this repository.
 
-One file does it, and it patches nothing on disk:
+The normal HUD (timer, zone name, score top right, gadget strip, radar, merc displays, prompts) stays on screen while a merc looks through the drone (HUD mode 3) or the scope (mode 9) and is drawn over that view's overlay, done by 249 bytes of `SCDA_Online.exe` and nothing else: no plugin, no ini, no log, no `patch.ps1`.
 
-| Piece | File | md5 | Installs to |
+Measured against the main build `C:\Program Files (x86)\SCDA Community Edition` = Community Edition 2026.10.07-1. Working note: `NOTES.md` (facts 1-22). It replaces `QolHud.asi` v3 (`..\README.md`); do not install both (v3 checks the 25 bytes at `0x10B73C90`, finds them changed and installs nothing).
+
+| Main file replaced | md5 | New file | md5 |
 | --- | --- | --- | --- |
-| plugin v3 | `QolHud.asi` (20,992 B), same file in `files\System\` and `build\QolHud.v3.asi` | `722365f7ef26110042b4d72615a2c4ae` | `System\QolHud.asi` (new, or replaces v2) |
-| ini section (optional, not written by default) | written by `patch.ps1 -Settings "..."` only | - | appended to `System\Enhanced.ini` |
+| `System\SCDA_Online.exe` (7,712,768 B) | `4a17634fbebc1cb2c6b550cc35337d9f` | `files\System\SCDA_Online.exe` (7,712,768 B) | `d7c3e994bca77869816b1e18727a3f24` |
 
-- Built and gated against the main branch exe `SCDA_Online.exe` md5 `0f1b2d1ce8167d267ee15d5a4ed4c3e6` and against the previous main build `d94c9137340f3996b5bc9ec361340d1e`; every byte the plugin checks or relies on is identical in both. The plugin never checks the exe's md5. It checks the bytes of what it takes over (25 at `0x10B73C90`, 75 at `0x10B70E98`, 112 at `0x10B70FE3`), installs nothing on a mismatch at the first, installs without the on-top part on a mismatch at the other two, and says so in `System\QolHud.log`.
-- No `.u` package and no exe file changes. The Ultimate ASI Loader (`System\dinput8.dll`, shipped with CE) loads the plugin at start.
-- **Which machine needs it:** the machine of the player who wants it. The HUD is drawn on the player's own machine; the plugin writes no game state and nothing that is replicated (only its own memory and, during a draw call, the same FOV swap the game makes itself). Players with and without it can share a match.
-- "Sniper" is read as the merc's scope: the view of `BinocularMercRemoteCam`, whose HUD overlay is the game's `Hud_Snipe_Total` mesh.
-- History: v1 (`build\QolHud.v1.asi`, `70c5e23e365504b985df2ca763b7ed15`) kept the gun reticle; v2 (`build\QolHud.v2.asi`, `2df8cf2022d0134e410363807b128e94`) left it out unless `Reticle=1` and passed two in-game runs, but the kept widgets were drawn under the overlay (the scope mask darkened the zone name, radar and top-right score; the drone frame covered them). v3 draws them on top (operator's order of 2026-09-29). **v3 has not run in the game.**
+Who needs it: the player who wants it, on their own machine. Only the local HUD's widget masks and draw order change; nothing replicated, no package, no save data. Players with and without it can share a match (INFERRED, as for v3).
 
-# Change log (rule 8)
+# Changes
+
+File offset = VA - `0x10900000` (`.text` and `.rdata`). Three row groups; each group can be dropped on its own:
+
+| Group | Rows | Gives |
+| --- | --- | --- |
+| S1 | 1-15 | the drone view (mode 3) shows the widgets, by the stock mode test; drawn under the drone frame |
+| S2 | 16 | the scope view (mode 9) shows the same widgets; drawn under the scope mask. Needs S1 (it keys on the bit S1 adds) |
+| O | 17-21 | both views draw the widgets over the overlay. Without O the result is v2's look; O without S1/S2 changes nothing visible but the order of the few stock-shown widgets |
+
+S1 and S2 are data and an in-place rewrite of one 25-byte routine; only O adds code (217 B in two `.text` caves plus 8 B of memory).
 
 | # | File | Site | Stock content | New content |
 | --- | --- | --- | --- | --- |
-| 1 | `System\QolHud.asi` | new file | - | the plugin, md5 `722365f7ef26110042b4d72615a2c4ae` |
-| 2 | `SCDA_Online.exe`, **in memory at load** | VA `0x10B73C90` (file `0x273C90`), 6 bytes, the start of the widget mode test (vtable slot `+0x0C` of all 41 HUD widget classes) | `8B D1` mov edx,ecx / `8A 4C 24 04` mov cl,[esp+4] | `E9 <rel32>` jmp stub A, then 1 x `90`. Stub A (380 bytes, below) is the whole routine again plus the v3 record, and never returns into the stock one; the stock bytes `0x10B73C96`..`0x10B73CA8` stay in place and become unreachable |
-| 3 | `SCDA_Online.exe`, **in memory at load**, only with `OnTop=1` and only after row 2 | VA `0x10B70E98` (file `0x270E98`), 7 bytes, the start of the two HUD list draws in `0x10B70E30` | `6A 00` push 0 / `68 EC 15 04 11` push 0x110415EC | `E9 <rel32>` jmp stub B, then 2 x `90`. Written only when the 75 bytes `0x10B70E98..0x10B70EE2` and the 112 bytes `0x10B70FE3..0x10B71052` (the per-frame HUD loop body) are the stock ones. Stub B (887 bytes) either runs the two stolen pushes and returns to `0x10B70E9F` (stock draw) or draws the split and returns to `0x10B70EDD` |
-| 4 | `System\QolHud.log` | new, rewritten on every start | - | one line: `QolHud 3: installed at 0x10B73C90, Drone=1 Sniper=1 Binocular=0 StickyCam=0 Reticle=0 OnTop=1 DroneHide=0x0000000000000000 ... StickyCamUnder=0x0000000000000000; on top: installed at 0x10B70E98`, or `...; on top: off (OnTop=0), 0x10B70E98 untouched`, or `...; on top: REFUSED - ...`, or `... disabled ...`, `... no view is switched on ...`, `... REFUSED ...` with the reason |
-| 5 (optional) | `System\Enhanced.ini` | end of file, only when asked for | - | `[QOLHUD]` and the keys of the table "Settings". Without the section the plugin runs on its defaults |
+| 1 | `System\SCDA_Online.exe` | VA `0x10B85BE5`, file `0x285BE5`: mask of widget [2] (vt `0x10F93234`), ctor `0x10B85B70` (built from `0x109B1298`) | `02` (`83 4E 34 02` = `or dword [esi+0x34],2`: mode 1) | `0A` (`83 4E 34 0A` = `or dword [esi+0x34],0xA`: modes 1, 3) |
+| 2 | same | VA `0x10B71EA7`, file `0x271EA7`: [3] root (vt `0x10F93108`), HUD builder `0x10B71340` | `02` (`81 4E 34 02 04 00 00` = `or ...,0x402`: modes 1, 10) | `0A` (`or ...,0x40A`: modes 1, 3, 10) |
+| 3 | same | VA `0x10B71F6D`, file `0x271F6D`: [4] merc frame (vt `0x10F92F14`), builder | `02` (`83 4E 34 02`) | `0A` (`83 4E 34 0A`) |
+| 4 | same | VA `0x10B72016`, file `0x272016`: [6] (vt `0x10F93270`), builder | `02` | `0A` |
+| 5 | same | VA `0x10B83931`, file `0x283931`: [10] round timer (vt `0x10F930CC`), ctor `0x10B83920` | `02` | `0A` |
+| 6 | same | VA `0x10B9D731`, file `0x29D731`: [11] zone name (vt `0x10F935F4`), ctor `0x10B9D720` | `02` | `0A` |
+| 7 | same | VA `0x10B844E0`, file `0x2844E0`: [12] score top right `UH_Score_Versus` (vt `0x10F93144`), ctor `0x10B844D0` | `02` | `0A` |
+| 8 | same | VA `0x10B724D0`, file `0x2724D0`: [13] spy status / hacking panel (vt `0x10F92E50`), builder's versus path (after base ctor `0x10B76920`) | `02` | `0A` |
+| 9 | same | VA `0x10B7F420`, file `0x27F420`: [14] gadget strip (vt `0x10F92FDC`), ctor `0x10B7F410` | `02` | `0A` |
+| 10 | same | VA `0x10B9430F`, file `0x29430F`: [15] radar objects (vt `0x10F9339C`), ctor `0x10B942F0` | `02` (`81 4E 34 02 01 00 00` = `or ...,0x102`: modes 1, 8) | `0A` (`or ...,0x10A`: modes 1, 3, 8) |
+| 11 | same | VA `0x10B8BB26`, file `0x28BB26`: [16] (vt `0x10F93324`), ctor `0x10B8BAD0` | `02` (`or ...,0x402`) | `0A` (`or ...,0x40A`) |
+| 12 | same | VA `0x10B7266F`, file `0x27266F`: [19] hook prompt (vt `0x10F93450`), builder | `02` | `0A` |
+| 13 | same | VA `0x10B726BB`, file `0x2726BB`: [20] reload gadget prompt (vt `0x10F93018`), builder | `02` | `0A` |
+| 14 | same | VA `0x10B9D09C`, file `0x29D09C`: [25] merc grenade display (vt `0x10F935B8`), ctor `0x10B9D090` | `02` | `0A` |
+| 15 | same | VA `0x10B7B0A8`, file `0x27B0A8`: [26] merc detection display (vt `0x10F92E9C`), ctor `0x10B7B070` | `02` | `0A` |
+| 16 | same | VA `0x10B73C90..0x10B73CAF`, file `0x273C90`, 32 B: the widget mode test (vt slot `+0x0C` of all 41 widget classes; no direct caller) and its 7 padding bytes | `8BD18A4C2404B801000000D3E0234234F7D81BC0F7D8C20400` + 7 x `CC` (below) | `8B51348BC2F7D0A80A750380CE028B4C24040FA3CA1BC0F7D8C20400` + 4 x `CC` (below): a widget whose mask holds modes 1 and 3 also answers for mode 9 |
+| 17 | same | VA `0x10B70E98`, file `0x270E98`, 7 B: start of the two list draws in the HUD render `0x10B70E30` | `6A 00 68 EC 15 04 11` (`push 0` / `push 0x110415EC`) | `E9 E3 DC 2B 00 90 90` (`jmp 0x10E2EB80` / `nop` / `nop`) |
+| 18 | same | VA `0x10F93430`, file `0x693430`: scope overlay [21] vtable `0x10F93414`, slot `+0x1C` (update) | `50 5E B9 10` (`0x10B95E50`) | `90 EE E2 10` (`0x10E2EE90`, cave W entry WS) |
+| 19 | same | VA `0x10F92EF4`, file `0x692EF4`: drone overlay [22] vtable `0x10F92ED8`, slot `+0x1C` (update) | `20 B7 B7 10` (`0x10B7B720`) | `97 EE E2 10` (`0x10E2EE97`, cave W entry WD) |
+| 20 | same | VA `0x10E2EB80..0x10E2EC2B`, file `0x52EB80`, 172 B: cave T + RR (the `.text` tail past VirtualSize `0x10E2EB41`, zero in main) | 172 zero bytes | `6A0068EC1504118A85040400003C0374043C09755EA1F0EF06118B0DF4EF06113BC1734F3B0DE41504117747E8470000008B8B280100008B1133C0506A01680000803F6A015050FF52108BF3E87F86BCFF33C08B0DF0EF0611E81A000000A1F4EF06118B0DE4150411E80A000000E9EA22D4FFE9A722D4FF2BC88B15E81504118D14825251518BD48B7B588B851C040000878758040000506A01528BF3E82E86BCFF8F875804000083C40CC3` (below) |
+| 21 | same | VA `0x10E2EE90..0x10E2EEBC`, file `0x52EE90`, 45 B: cave W | 45 zero bytes | `BA505EB910EB05BA20B7B710A1E4150411A3F0EF0611FF742408FF742408FFD2A1E4150411A3F4EF0611C20800` (below) |
 
-The stock routine at `0x10B73C90` (thiscall, `ecx` = widget, one stack argument = the mode, `ret 4`, answer in `eax`):
+Memory used by group O, not in the file: `0x1106EFF0` (A) and `0x1106EFF4` (B), two dwords in the `.data` page past its VirtualSize (`.data` ends at `0x1106EA24`, `.rsrc` starts at `0x1106F000`; mapped read-write and zero at load; nothing in the exe or the 8 CE plugins references the range).
 
-```
-8B D1              mov  edx, ecx
-8A 4C 24 04        mov  cl, [esp+4]
-B8 01 00 00 00     mov  eax, 1
-D3 E0              shl  eax, cl
-23 42 34           and  eax, [edx+0x34]        ; the widget's mode mask
-F7 D8 / 1B C0 / F7 D8   neg eax / sbb eax,eax / neg eax     ; 0 or 1
-C2 04 00           ret  4
-```
+By hand: write rows 1-21 at their file offsets into a copy of main's exe (each row's stock bytes must be there first).
 
-The stock render tail at `0x10B70E98` (inside `0x10B70E30`; `ebx` = viewport, `ebp` = HUD, `esi`/`edi` saved by the function):
-
-```
-6A 00 / 68 EC150411          push 0 / push 0x110415EC        ; EC list, player's FOV     <- the 7 stolen bytes
-8B F3 / E8 ->0x109F7250      mov esi,ebx / call render(list, flag)
-8B 7B 58                     mov edi,[ebx+0x58]              ; the viewport's actor
-F3 0F 10 87 58040000         movss xmm0,[edi+0x458]          ; its FOV
-8B 85 1C040000               mov eax,[ebp+0x41C]             ; the HUD FOV
-6A 01 / 68 E0150411          push 1 / push 0x110415E0        ; E0 list, HUD FOV
-F3 0F 11 44 24 18            movss [esp+0x18],xmm0           ; FOV saved
-89 87 58040000               mov [edi+0x458],eax
-E8 ->0x109F7250              call render(list, flag)
-F3 0F 10 44 24 10 / F3 0F 11 87 58040000   FOV restored
-5F 5E 5D C2 0400             pop edi / pop esi / pop ebp / ret 4      <- 0x10B70EDD, stub B's split exit
-```
-
-Stub A, as built (preferred base `0x6E700000`, RVA `0x10F5`). `[edx+..]` / `[esi+..]` are the plugin's own data (image base found by call/pop): `+0x2008` enabled views, `+0x2040` Reticle, `+0x2048` views with on-top live, `+0x2058` / `+0x205C` / `+0x2060` / `+0x2070` the record (HUD, mode, widgets recorded, lifted mask), `+0x2080 + 8*mode` hide lists, `+0x2520 + 8*mode` under lists, `+0x3000` / `+0x3100` per-widget list counts:
+## Row 16, the widget mode test
 
 ```
-cmp  dword [esp], 0x10B7100C         ; called by the per-frame loop's test(7)?  (return address)
-jne  test
-call $+5 / pop edx / sub edx, 0x1103 ; edx = image base
-cmp  dword [edx+0x2048], 0 / je test ; on top not live: no record
-cmp  esi, 64 / jae test              ; esi = the caller's loop index
-test esi, esi / jnz next
-mov  [edx+0x2058], edi               ; widget 0: new record; edi = the loop's HUD
-movzx eax, byte [edi+0x404] / mov [edx+0x205C], eax
-xor  eax, eax / mov [edx+0x2070], eax / mov [edx+0x2074], eax / mov [edx+0x2060], eax
-next:
-cmp  [edx+0x2058], edi / jne test    ; same HUD
-cmp  [edx+0x2060], esi / jne test    ; the next index in order
-mov  eax, [0x110415E4] / mov [edx+esi*4+0x3000], eax   ; E0 count before this widget's update
-mov  eax, [0x110415F0] / mov [edx+esi*4+0x3100], eax   ; EC count
-lea  eax, [esi+1] / mov [edx+0x2060], eax
-test:                                ; ---- the v2 mode test ----
-mov  edx, ecx / movzx ecx, byte [esp+4] / mov eax, 1 / shl eax, cl
-test [edx+0x34], eax / jne yes       ; stock "shown"
-push esi / call $+5 / pop esi / sub esi, 0x1191     ; esi = image base
-test [esi+0x2008], eax / je no       ; an enabled view?
-test byte [edx+0x34], 2 / je no      ; a normal-play widget?
-cmp  ecx, 15 / ja no
-cmp  dword [edx], 0x10F933D8 / jne notReticle / cmp dword [esi+0x2040], 0 / je no
-notReticle:
-push edi / lea edi, [esi+ecx*8+0x2080] / mov eax,[edi] / or eax,[edi+4] / je lift   ; empty hide list
-mov  eax, [0x1100FF00] / test eax,eax / je lift                                      ; the current HUD
-mov  edi, [eax+0x3F8] / mov eax, [eax+0x3FC] / test eax,eax / je lift
-xor  ecx, ecx
-find: cmp ecx,edi / jge lift / cmp ecx,64 / jae lift / cmp [eax+ecx*4],edx / je found / inc ecx / jmp find
-found: movzx edi, byte [esp+0xC] / lea edi,[esi+edi*8+0x2080] / bt [edi],ecx / jb noPop2   ; on the hide list
-lift:                                ; the plugin's own "shown" ---- v3 ----
-cmp  dword [esp+8], 0x10B7101F / jne yesPop2   ; only the per-frame loop's test(mode)
-mov  ecx, [esp+4] / cmp ecx, 64 / jae yesPop2  ; the caller's esi = index
-mov  eax, [esp] / cmp eax, [esi+0x2058] / jne yesPop2        ; the caller's edi = the recorded HUD
-lea  eax, [ecx+1] / cmp eax, [esi+0x2060] / jne yesPop2      ; the widget just recorded
-movzx eax, byte [esp+0xC]
-bt   [esi+0x2048], eax / jae yesPop2                         ; on top live in this view
-bt   [esi+eax*8+0x2520], ecx / jb yesPop2                    ; on the view's under list
-bts  [esi+0x2070], ecx                                       ; lifted
-yesPop2: pop edi / pop esi
-yes:  mov eax, 1 / ret 4
-noPop2: pop edi
-no:   pop esi / xor eax, eax / ret 4
+stock (25 B + 7 x CC)                          new (28 B + 4 x CC)
+8B D1        mov  edx,ecx                      8B 51 34     mov  edx,[ecx+0x34]   ; the widget's mode mask
+8A 4C 24 04  mov  cl,[esp+4]                   8B C2        mov  eax,edx
+B8 01000000  mov  eax,1                        F7 D0        not  eax
+D3 E0        shl  eax,cl                       A8 0A        test al,0x0A          ; modes 1 and 3 both set?
+23 42 34     and  eax,[edx+0x34]               75 03        jne  0x10B73C9E       ; no: the mask as it is
+F7 D8        neg  eax                          80 CE 02     or   dh,2             ; yes: mode 9 (bit 9) too
+1B C0        sbb  eax,eax                      8B 4C 24 04  mov  ecx,[esp+4]      ; the mode asked for
+F7 D8        neg  eax                          0F A3 CA     bt   edx,ecx          ; bit (mode mod 32), as shl
+C2 04 00     ret  4                            1B C0        sbb  eax,eax
+                                               F7 D8        neg  eax              ; 1 or 0, as stock
+                                               C2 04 00     ret  4
 ```
 
-Stub B (RVA `0x1271`; `edi` = image base; the exact bytes of both stubs are printed in `build\gates\build_v3.txt`):
+The answer is the stock one for every mask, except that a mask holding modes 1 and 3 also answers yes for mode 9. In the merc versus HUD those are rows 1-15's widgets and stock widget [24] (system malfunction message, modes 1, 3); widget [5] (prompts) already has mode 9. The three widget loops (`0x10B70EF0` per frame, `0x10B70C20` texts, `0x10B72EC0`) all ask this routine, so meshes and texts follow it alike.
+
+## Rows 20-21, the caves
 
 ```
-call $+5 / pop edi / sub edi, 0x1276
-mov eax,[edi+0x2070] / or eax,[edi+0x2074] / je stock           ; nothing lifted in the last loop
-cmp [edi+0x2058], ebp / jne fallback                              ; the loop ran for this HUD
-movzx eax, byte [ebp+0x404] / cmp eax,[edi+0x205C] / jne fallback ; in this mode
-mov ecx,[edi+0x2060] / test ecx,ecx / je fallback / cmp ecx,64 / ja fallback
-cmp ecx,[ebp+0x3F8] / jne fallback                                ; every widget recorded
-partition EC (count [0x110415F0], data [0x110415F4]) into the buffer at +0x3200:
-    count <= 1024, first start 0, every run start <= end <= count, else fallback;
-    runs of widgets not in the lifted mask first, then the lifted runs; headers {n,n,ptr} at +0x25A0 (base) / +0x25B8 (lifted)
-partition E0 (count [0x110415E4], data [0x110415E8]) into +0x4200, headers at +0x25AC / +0x25C4, the same checks
-push 0 / push base+0x25A0 / mov esi,ebx / mov eax,0x109F7250 / call eax                ; EC base, player's FOV
-mov edx,[ebx+0x58] / push [edx+0x458] / mov eax,[ebp+0x41C] / mov [edx+0x458],eax   ; HUD FOV in
-push 1 / push base+0x25AC / mov esi,ebx / mov eax,0x109F7250 / call eax                ; E0 base: overlay and stock-shown widgets
-mov edx,[ebx+0x58] / pop [edx+0x458]                                                    ; FOV back
-mov ecx,[ebx+0x128] / test ecx,ecx / je noClear
-mov eax,[ecx] / push 0 / push 1 / push 0x3F800000 / push 1 / push 0 / push 0 / call [eax+0x10]   ; RI->Clear(0,0,1,1.0,1,0)
-noClear:
-push 0 / push base+0x25B8 / ... call 0x109F7250                                         ; EC lifted
-(HUD FOV in) push 1 / push base+0x25C4 / ... call 0x109F7250 / (FOV back)               ; E0 lifted, on top
-inc dword [edi+0x2050] / push 0x10B70EDD / ret                                           ; split exit
-fallback: inc dword [edi+0x2054]
-stock:    push 0 / push 0x110415EC / push 0x10B70E9F / ret                               ; the stolen bytes, back to stock
+; T: entered by row 17; ebx = viewport, ebp = HUD, stack as at 0x10B70E98
+10E2EB80  6A00 / 68EC150411   push 0 / push 0x110415EC   ; the stolen pushes = render(EC,0)'s arguments
+10E2EB87  8A8504040000        mov  al,[ebp+0x404]        ; HUD mode
+10E2EB8D  3C03 / 7404         cmp al,3 / je 0x10E2EB95   ; drone view
+10E2EB91  3C09 / 755E         cmp al,9 / jne BACK        ; merc scope
+10E2EB95  A1F0EF0611          mov  eax,[A]               ; the overlay's run [a,b) in list E0 (recorded by W)
+10E2EB9A  8B0DF4EF0611        mov  ecx,[B]
+10E2EBA0  3BC1 / 734F         cmp eax,ecx / jae BACK     ; need a < b
+10E2EBA4  3B0DE4150411 / 7747 cmp ecx,[E0.num] / ja BACK ; need b <= num
+10E2EBAC  E847000000          call RR                    ; E0[a,b): the overlay, HUD FOV
+10E2EBB1  8B8B28010000        mov  ecx,[ebx+0x128]       ; RI
+10E2EBB7  8B11 / 33C0         mov edx,[ecx] / xor eax,eax
+10E2EBBB  50 6A01 680000803F 6A01 50 50 / FF5210   RI->Clear(0,0,1,1.0,1,0)   ; the engine's own pre-HUD clear (0x10A5024C)
+10E2EBCA  8BF3 / E87F86BCFF   mov esi,ebx / call 0x109F7250   ; EC with the player's FOV, as stock
+10E2EBD1  33C0 / 8B0DF0EF0611 / E81A000000      xor eax,eax / mov ecx,[A] / call RR       ; E0[0,a)
+10E2EBDE  A1F4EF0611 / 8B0DE4150411 / E80A000000 mov eax,[B] / mov ecx,[E0.num] / call RR ; E0[b,num)
+10E2EBEE  E9EA22D4FF          jmp  0x10B70EDD            ; pop edi / esi / ebp, ret 4
+10E2EBF3  E9A722D4FF  BACK:   jmp  0x10B70E9F            ; the stock tail, pushes already done
+; RR: render E0[eax,ecx) with the HUD FOV exactly as the stock tail renders E0
+10E2EBF8  2BC8                sub  ecx,eax               ; count (render skips 0)
+10E2EBFA  8B15E8150411        mov  edx,[E0.data]
+10E2EC00  8D1482              lea  edx,[edx+eax*4]
+10E2EC03  52 51 51 / 8BD4     push data / push num / push max / mov edx,esp   ; a TArray header on the stack
+10E2EC08  8B7B58              mov  edi,[ebx+0x58]        ; the viewport's actor
+10E2EC0B  8B851C040000        mov  eax,[ebp+0x41C]       ; HUD FOV
+10E2EC11  878758040000 / 50   xchg eax,[edi+0x458] / push eax   ; in; the actor's FOV saved
+10E2EC18  6A01 52 / 8BF3      push 1 / push header / mov esi,ebx
+10E2EC1D  E82E86BCFF          call 0x109F7250
+10E2EC22  8F8758040000        pop  dword [edi+0x458]     ; FOV back
+10E2EC28  83C40C / C3         add esp,12 / ret
+
+; W: the two overlay classes' update slot (rows 18-19); thiscall update(p1,p2), ret 8
+10E2EE90  BA505EB910 / EB05   WS: mov edx,0x10B95E50 / jmp W   ; scope overlay update
+10E2EE97  BA20B7B710          WD: mov edx,0x10B7B720           ; drone overlay update
+10E2EE9C  A1E4150411 / A3F0EF0611   W: mov eax,[E0.num] / mov [A],eax
+10E2EEA6  FF742408 FF742408   push p2 / push p1
+10E2EEAE  FFD2                call edx                   ; the stock update, ecx = the widget
+10E2EEB0  A1E4150411 / A3F4EF0611   mov eax,[E0.num] / mov [B],eax
+10E2EEBA  C20800              ret  8
 ```
 
-To apply this by hand without the plugin, both stubs have to be written into a free exe code cave with the plugin's data as absolute addresses, and both sites pointed at them. That route was not built.
+E0 = `0x110415E0` {max, num `0x110415E4`, data `0x110415E8`}, EC = `0x110415EC`, render(list, flag) = `0x109F7250`. In modes 3 and 9 with a valid record the HUD meshes are drawn in this order: the overlay's actors, the engine's depth / stencil clear, list EC, the rest of E0 in its stock order. In every other case (normal play, spy views, kill cam, a record that does not fit the list) T runs the stock bytes. The lists themselves, the widget update order and every widget's own code stay stock; W only reads `E0.num`.
 
-# Mechanism in the stock game
+# Checks (lean, no harness)
 
-Everything below is read from the exe (static). The HUD is one object per local player, vtable `0x10F81BC0`, reached as `PlayerController+0x95C`; the last HUD that added a widget also stands in the global `0x1100FF00`.
-
-| Piece | Where | Fact |
+| Check | Result | Log |
 | --- | --- | --- |
-| widget array | `HUD+0x3F4` max, `+0x3F8` count, `+0x3FC` data | filled only through `AddWidget` `0x10B72C60` (HUD vtable `+0x448`) |
-| HUD mode | `HUD+0x404` (byte); `+0x405` the mode before; `+0x406` the mode of the last frame | set through HUD vtable `+0x444` = `0x10B729F0` |
-| widget mode mask | `widget+0x34` (dword) | bit n set = the widget is shown in mode n; written by the widget's ctor (`or [esi+0x34], imm`) |
-| mask helpers | widget vtable `+0x04` `0x10B73C60` clear, `+0x08` `0x10B73C70` set bit n, `+0x0C` `0x10B73C90` test bit n | the same three routines in all 41 widget vtables (`0x10F92C08`..`0x10F935F4`) |
-| the rule | per-frame loop `0x10B70EF0`, and the loops `0x10B70C20` and `0x10B72EC0` | `shown = HUD.mode == 7 or widget.test(7) or widget.test(HUD.mode)`; a widget that is not shown is hidden by `0x10B747E0` and its update is not called |
-| callers of the test | none direct | `0x10B73C90` is referenced from the 41 vtable slots and from nowhere in `.text` |
+| byte diff of `files\System\SCDA_Online.exe` against main | 249 bytes differ; every one inside a row above, every row holds differing bytes: 21 rows = 21 groups (15 x 1, 27, 7, 3, 3, 150, 44 B). As contiguous runs they are 31, because inside rows 16 and 18-21 some new bytes equal the stock ones (zero bytes in the cave code, the `0x10` high byte of the pointers, `CC` padding) | `scratch\check_b1.txt` |
+| disassembly of every site before and after | rows 1-15 `or dword [esi+0x34],2 / 0x402 / 0x102` -> `0xA / 0x40A / 0x10A`; row 16 and the caves as above; every branch lands on an instruction start; nothing in `.text` branches into `0x10B73C91..0x10B73CAF` or `0x10B70E99..0x10B70E9E`, and the only file dwords pointing into row 16 are the 41 vtable slots = `0x10B73C90` | `scratch\sites_before_after.txt`, `scratch\py\xrefs.py` |
+| two builds from main | one md5 `d7c3e994bca77869816b1e18727a3f24`. Variants by the same script: rows 1-16 only (`--groups S1,S2`) `5c169f4d267e3f904a01ded4c6a1f475`, rows 1-15 only (`--groups S1`) `b3c0fc10c1154399969205873eced418` | `scratch\py\build_lean.py` |
+| the 8 CE plugins (`Enhanced`, `MatchRec`, `Modes`, `ObjHack`, `ProxVoice`, `RollFix`, `SpawnProt`, `VentChain`): every `ok` range and hook VA of their start logs, every image-range dword in their files, against rows 1-21 and the two data dwords | none inside or within 16 B; nearest: `Enhanced.asi`'s `0x10B70F08` 105 B after row 17, `Modes.asi`'s hook `0x10B73FF0` 832 B after row 16; no plugin references either cave or the `.data` slack | `scratch\check_b1.txt` |
+| `dead-chat-gate` (file `0x0B8B36`, `0x0B8B37`, `0x2816A8`) | disjoint, none within 16 B | `scratch\check_b1.txt` |
+| LEAN-C chat-list (exe file bytes `0x281740`, `0x2817A0`, `0x2817AA`, `0x2817B4`, `0x2817BE`, `0x2817C8`, `0x2824C3`, `0x2824CA`, `0x283047`, `0x2833A6`, `0x2833D2`, `0x2833DE..DF`, `0x283449..4A`, `0x283461`, `0x283465`, `0x28346A`), checked against `Deploy\chat-list\lean\files\System\SCDA_Online.exe` (`f1666348`) | disjoint, none within 16 B; widget 18 untouched. Its 18 bytes in `Interface_stm.usx`: this stack writes no package | `scratch\combined_check.txt` |
+| LEAN-G spy-grab-merc / qol4necks / root-berzerk (cave `0x10E2EC40..0x10E2EE0F`; site bytes file `0x2C7A29` (7), `0x2C9F18` (6), `0x2C9F2F` (4), `0x2CAE97` (5), `0x2CAE9E` (4), `0x2CB011` (4), `0x2D8AD0` (7), `0x4AA307` (6)), checked against their `lean\files\System\SCDA_Online.exe` (`bafe978b`, `c1da8b29`, `b6f20e1a`) | disjoint, none within 16 B; cave T ends 20 B before `0x10E2EC40`; all six stacks on one exe = 630 B, no byte written twice | `scratch\combined_check.txt` |
+| main's own cave code (door carry `0x10E2EB50..0x10E2EB7F` and `0x10E2EEE0..0x10E2EFB4`, flashbang `0x10E2EE40..0x10E2EE79`, JammerLauncher spawn `0x10E2EFC0..0x10E2EFEA`) | untouched: T starts right after the door carry tail (`0x10E2EB80`); W sits in the zero run `0x10E2EE7A..0x10E2EEDF` between flashbang and door carry, 22 B and 35 B clear | `scratch\py\caves.py` |
 
-## How the HUD is drawn, and why the overlay covered the kept widgets (v3)
+# v3's parts
 
-| Piece | Where | Fact |
+| v3 part | Lean | Why |
 | --- | --- | --- |
-| HUD meshes are actors in two lists | E0 `0x110415E0`, EC `0x110415EC`, each a TArray `{max, num, data}` | E0: camera-space items, drawn with the HUD FOV `HUD+0x41C`; EC: items whose element has `+0x68` set, drawn with the player's FOV |
-| the lists are rebuilt every frame | per-frame loop `0x10B70EF0` | `0x10B70F0C` / `0x10B70F12` set both counts to 0; then, in widget-array order, every shown widget's update (+0x1C; all 44 update routines end in `0x10B73D00`) appends the actors of its visible sub-items (`+0x80` set) through `0x10BA1BB0` -> element vt+0x6C. So the list order is the widget-array order |
-| the loop's registers | `0x10B70FE3`..`0x10B71052` | `esi` = widget index, `edi` = HUD, `ebp` = widget; test(7) is `call [edx+0Ch]` at `0x10B71009` (returns to `0x10B7100C`), test(mode) `call [eax+0Ch]` at `0x10B7101C` (returns to `0x10B7101F`), the update `call [eax+1Ch]` at `0x10B71045` |
-| the lists are drawn in list order | `0x10B70E30` (called once, from `0x10A5057F`, `ebx` = viewport), `0x10B70E98`..`0x10B70EDC` | `render(EC, 0)` then `render(E0, 1)` with the HUD FOV swapped into `[[viewport+0x58]+0x458]`; `render` = `0x109F7250` builds a camera scene node and hands the list to `0x10A50B20`, which draws every actor not hidden (`actor+0x314` bit `0x400`) one after the other in list order |
-| texts come last | `0x10B70C20` -> widget +0x2C `0x10B73F10` -> item vt+0x68 `0x10BA1CD0` | element type 6 (text) is drawn on the canvas after both lists, so HUD texts are never covered |
-| depth before the HUD | `0x10A5024C` in `0x10A50050` | `RI->Clear(0, 0, 1, 1.0, 1, 0)` (depth and stencil) on `RI = [viewport+0x128]`, vtable `+0x10` (`0x10907E10` builds the D3D clear flags) |
-| why the overlay won | widget array | the overlays (scope 21 `Hud_Snipe_Total`, drone 22 `HUD_DRONE`, sticky 27, spy binocular 21) sit after the normal widgets (3..20), so their actors are appended later and drawn over them. The scope mask darkens what is under it, the drone frame covers it |
-| whether HUD materials write depth | - | not determined; v3 does not depend on it (it clears depth before the lifted part, as the engine does before the whole HUD) |
+| widgets kept in the drone view (mode 3) | kept with a difference: rows 1-15, the 15 merc versus widget classes v3 lifted, by their own mask byte. Messages / chat [18] is not included (it is chat-list's widget, and its low mask byte `0x2816A8` is dead-chat-gate's). The other score / status classes a challenge HUD builds at [12] / [13] are not included (v3's rule caught any normal-play widget) | the stock mode test shows a widget whose mask holds the mode; one byte per class |
+| widgets kept in the scope view (mode 9) | kept with a difference: the same set (plus stock [24], as v3), through row 16 | bit 9 is out of reach of the ctors' `or dword [esi+0x34],imm8` (an imm8 sets bits 0..6 only), so the test routine answers mode 9 for "modes 1 and 3" |
+| gun reticle hidden in both views (`Reticle=0`) | kept exactly | [23] keeps mask `0x02`, so neither mode 3 nor the routine's rule reaches it |
+| spy views stock (`Binocular=0`, `StickyCam=0`) | kept exactly | modes 2 and 8 unchanged; mode 3 / 9 bits on shared classes only matter for a merc |
+| on top: split draw at `0x10B70E98` with the engine's clear between | kept with a difference: the split point is the overlay's own run (recorded by its update, rows 18-19), not a per-widget record in the mode test; the stock-shown widgets (system message [1], prompts [5], malfunction [24] in the drone view) are now on top too (v3 kept them under); all of EC is drawn after the clear (v3 drew the stock-shown widgets' EC items before the overlay); no copies of the lists, no 1,024-actor cap, update order untouched | order alone is not enough: the overlays' `BasicModernMaterial` parts (`Mat_Hud_Snipe_contour`, `Mat_hud_drone_noir`) sit at X 200 / 140 in front of the widgets (X 550..2200) and the engine clears depth before the HUD (INFERRED: they would still hide a widget drawn after them); the record route needs no hook in the per-frame loop |
+| `[QOLHUD]` settings (`Enabled`, `Drone`, `Sniper`, `Binocular`, `StickyCam`, `Reticle`, `OnTop`, `*Hide`, `*Under`) | dropped | no ini (brief). By bytes: `OnTop=0` = drop rows 17-21; one widget less = leave its row out; drone only = rows 1-15; scope without drone is not available by bytes |
+| `System\QolHud.log`, counters, `test\hud-state.ps1` plugin rows | dropped | no log, no plugin state; the probe was written for the plugin and was not checked against this stack |
+| `patch.ps1` (apply, revert, settings, v1 / v2 recognition) | dropped | drag-and-drop stack; revert = main's exe |
+| byte checks at load and refusal on a foreign build | dropped | the stack is built by stock-checked writes on main's exe; rows 1-21 give the stock bytes for a hand check |
 
-The modes, by who sets them:
+# In-game test (on a working copy equal to main, rule 11)
 
-| Mode | Set by | Site |
-| --- | --- | --- |
-| 0 | nothing shown; every remote camera of the binocular family sets 0 first | `0x10DE2410` (`BinocularRemoteCam` start) |
-| 1 | normal play | `0x10BD0439` (where the HUD gets its owner), the kill cam's stop `0x109B78E2`, and others |
-| 2 | `StickyCam` start virtual `+0x4E0` | `0x10D93E70`; stop `0x10D93B20` restores |
-| 3 | `Drone` start virtual | `0x10DE8CF0`; stop `0x10DE8C70` restores the mode saved in `cam+0x4E8` |
-| 4 | `KillCam` start | `0x109B7730` |
-| 5 | spectating, by the texts its widget loads | `0x10BAED93` |
-| 6 | end of game (`ClientDisplayEndOfGameHud`) | `0x10BD8BAD` |
-| 7 | every widget shown | tested by the three loops |
-| 8 | `BinocularSpyRemoteCam` start | `0x10DFB6B0`; stop `0x10DFB5B0` |
-| 9 | `BinocularMercRemoteCam` start: the merc's scope | `0x10DFBB50`; stop `0x10DFBA80` |
-| 10 | switched on and off inside the player input routine `0x10BDA840` | `0x10BDB680`, `0x10BDB674` |
-| 11 | `MotherDroneCam` start (the briefing) | `0x10DA4760` |
-| 12 | the mode of the quit session dialog widget | the call that sets it was not located; the setter handles it at `0x10B72A1F` and `0x10B72A8F` |
-| 13 | the mode of the widget the HUD builds itself | `0x10B7EDD5` |
-| 14 | set by `ResetHud` when `GameReplicationInfo.GameMode` is 3; the drone overlay carries it too | `0x10B72F60` |
+Install: drag the contents of `files\` onto the install root and replace (game closed); no `System\QolHud.asi` beside it. Reset: main's `System\SCDA_Online.exe`.
 
-The widgets of the versus HUD, in array order (live index as `test\hud-state.ps1` printed it in test runs 1 and 2). The names come from the meshes, materials and texts each widget's own code loads (`build\re\widget_names.txt`).
+1. Normal play as a merc: the HUD is as in stock (nothing moved, missing or doubled); as a spy too.
+2. Scope (right mouse button): the zone name, radar, round timer, score top right, gadget strip, merc grenade and detection displays and the hook / reload prompts are drawn **over** the scope mask at full brightness, not darkened (compare `..\test\results\upsilon-2\SCOPE-full_140816_728.jpg`); the gun reticle is not drawn; the scope's own frame, cross, distance, zoom and ammo look as in stock.
+3. Leave the scope (zoom key again): the HUD is as in step 1, nothing left over.
+4. Drone (gadget key, outside the merc base): the same widgets over the frame brackets (compare `DRONE-resp_141804_047.jpg`, where the left bracket covered the zone name and radar); the drone's own status, count and bindings panel look as in stock. Leave by the key and by self-destruct: HUD as in step 1.
+5. Depth inside the lifted part: the radar's 3D objects and the gadget cubes look as in normal play; the world markers (coloured octagons) show over the overlay.
+6. Entering and leaving either view: no frame with the overlay missing or drawn twice.
+7. Die while in the scope and while flying the drone: the kill cam (mode 4), the respawn and the end of the match (mode 6) are as in stock.
+8. A spy's binocular view (mode 8): unchanged (radar and prompts under the binocular overlay, as in stock).
+9. Messages / chat while in a view: not shown by this stack (open question 1).
 
-| Index | Size | Vtable | Stock modes | What | Drone / scope view with the plugin (defaults) |
-| --- | --- | --- | --- | --- | --- |
-| 0..2 | `0x6C`, `0x54`, ? | `0x10F92FA0`, `0x10F93360`, ? | 13; 7 (always); ? | built by the HUD itself; system message; one not found | unchanged |
-| 3 | `0x54` | `0x10F93108` | 1, 10 | root | shown, on top |
-| 4 | merc `0x68` / spy `0x58` | `0x10F92F14` / `0x10F934C8` | 1 | merc frame / spy goggle frame (`HUD_goggle_total`) | shown, on top |
-| 5 | `0x98` | `0x10F93054` | 1, 2, 3, 8, 9 | interaction prompts and button icons | shown by the stock game already; stays in its stock place (under the overlay) |
-| 6 | `0x50` | `0x10F93270` | 1 | not named (loads nothing of its own) | shown, on top |
-| 7 | `0xA0` | `0x10F932AC` | 4 | kill cam | unchanged |
-| 8 | `0x84` | `0x10F92F50` | 6 | end of game | unchanged |
-| 9 | `0x9C` | `0x10F9348C` | 5 | spectating | unchanged |
-| 10 | `0x74` | `0x10F930CC` | 1 | round timer (`Play_HUD_SpyUf_Time_30sec`, `UH_Merc_Helmet`) | shown, on top |
-| 11 | `0x70` | `0x10F935F4` | 1 | zone name (`UH_ZoneName`) | shown, on top |
-| 12 | `0x7C` | `0x10F93144` | 1 | score, top right (`UH_Score_Versus`) | shown, on top |
-| 13 | `0x11C` | `0x10F92E50` | 1 | spy status and hacking panel (`UH_Spy_01`.., `Mat_UH_Hacking_Bords`) | shown, on top |
-| 14 | `0x64` | `0x10F92FDC` | 1 | gadget strip (`UH_Gadget`) | shown, on top |
-| 15 | `0xCC` | `0x10F9339C` | 1, 8 | radar objects (`NM_RA_Obj01`.., `NM_RA_ECC`, `NM_RA_DropZone`) | shown, on top |
-| 16 | `0x25C` | `0x10F93324` | 1, 10 | not named | shown, on top |
-| 17 | `0x68` | `0x10F92C80` | 12 | quit session dialog | unchanged |
-| 18 | `0x14C` | `0x10F93090` | 1, 11 | messages (`UH_mess_*`) | shown, on top |
-| 19 | `0x54` | `0x10F93450` | 1 | hook prompt | shown, on top |
-| 20 | `0x54` | `0x10F93018` | 1 | reload gadget prompt | shown, on top |
-| merc 21 | `0x108` | `0x10F93414` | 9 | **scope overlay** (`Hud_Snipe_Total`, `Hud_Snipe_Contour`) | unchanged, drawn first |
-| merc 22 | `0x104` | `0x10F92ED8` | 3, 14 | **drone overlay** (`HUD_DRONE`) | unchanged, drawn first |
-| merc 23 | `0x68` | `0x10F933D8` | 1 | **merc gun reticle** (`NH_Merc_ReticleDisp`) | hidden unless `Reticle=1` (then on top) |
-| merc 24 | `0x58` | `0x10F9357C` | 1, 3 | system malfunction message | shown; in the drone view stock-shown, stays after the overlay |
-| merc 25 | `0x70` | `0x10F935B8` | 1 | merc grenade display (`NH_Merc_GrenadeDisp`) | shown, on top |
-| merc 26 | `0x74` | `0x10F92E9C` | 1 | merc detection display (`NH_Merc_Detection`) | shown, on top |
-| merc 27 | `0xE4` | `0x10F93540` | 2 | sticky cam overlay (`Hud_Sticky_total`) | unchanged |
-| spy 21 | `0xE8` | `0x10F92C44` | 8 | spy binocular overlay (`Hud_Binoculars_General`) | unchanged |
-| spy 22 | `0xE0` | `0x10F93504` | 1 | hack display (`NM_RA_Hack`) | shown with `Binocular=1` / `StickyCam=1` |
-| spy 23 | `0x90` | `0x10F932E8` | 1 | spy life bar (`UH_Life`) | shown with `Binocular=1` / `StickyCam=1` |
+# Open questions for the operator
 
-- Index 12 is the versus score; in a challenge the builder puts another score widget in the same place (`0x10B7219D`, jump table on the challenge type).
-- "On top" means: drawn after the view's overlay and after a depth clear, in its own array order. A widget the stock game already shows in the view (the prompts 5, the malfunction message 24 in the drone view, the always-shown system message 1) keeps its stock place.
+1. Messages / chat [18] in the views: v3 showed it. To add it, its mask needs mode 3: file `0x2816A8` low byte `02` -> `0A` on main, or `33` -> `3B` together with dead-chat-gate; that byte is dead-chat-gate's and the widget is chat-list's (LEAN-C), so it is left to them.
+2. Challenge HUDs: the other score / status classes at [12] / [13] (`0x10B84C70` vt `0x10F93180`, `0x10B84CB0` vt `0x10F931BC`, `0x10B85640` vt `0x10F931F8`, and the `0x10B76920` family) are not edited; one mask byte each if mercs use the drone or scope there.
+3. Cave and memory register: rows 20-21 claim `0x10E2EB80..0x10E2EC2B` and `0x10E2EE90..0x10E2EEBC`; group O uses `0x1106EFF0..0x1106EFF7` of the `.data` slack, a range `engine\exe-addresses-and-patches.md` does not list yet (`NOTES.md` facts 11, 12; `FINDINGS.md` was refused by the subagent harness, the findings went back to the orchestrator as text).
+4. If the in-game test shows something of an overlay's own drawn over its frame (an overlay item kept in list EC would now come after the clear), the remedy is a record of the overlay's EC run as well (about 40 B more).
 
-# Settings
+# On Community Edition 2026.10.11-3
 
-`System\Enhanced.ini`, section `[QOLHUD]`, read once at game start. Every key is optional.
+## Files
 
-| Key | Default | Meaning |
-| --- | --- | --- |
-| `Enabled` | 1 | 0 installs nothing |
-| `Drone` | 1 | the normal HUD stays on in the merc's drone view (HUD mode 3) |
-| `Sniper` | 1 | the normal HUD stays on in the merc's scope view (HUD mode 9) |
-| `Binocular` | 0 | the same for the spy's binoculars (HUD mode 8) |
-| `StickyCam` | 0 | the same for the sticky camera view (HUD mode 2) |
-| `Reticle` | 0 | 1 also keeps the merc's gun reticle; 0 leaves the view's own aiming mark alone |
-| `OnTop` | 1 | 1 draws the kept widgets on top of the view's overlay (site `0x10B70E98` installed); 0 is the v2 behaviour exactly (the site is not touched, nothing is recorded) |
-| `DroneHide`, `SniperHide`, `BinocularHide`, `StickyCamHide` | empty | widget indices (0..63) that stay hidden in that view, separated by commas, for example `SniperHide=13,16`. A widget the stock game shows in that view cannot be hidden this way |
-| `DroneUnder`, `SniperUnder`, `BinocularUnder`, `StickyCamUnder` | empty | widget indices (0..63) that stay shown in that view but are drawn in their stock place, under the overlay (v2 behaviour for that widget), for example `SniperUnder=15` |
-
-- With `Drone`, `Sniper`, `Binocular` and `StickyCam` all 0 nothing is installed.
-- Any value other than 0 counts as 1.
-
-# Build
-
-- Sources: `build\builder\QolHud.cs` (the plugin, assembled with Iced from C#), `build\builder\Program.cs` (builder and static gate), `build\builder\QolHudBuild.csproj` (net9.0, Iced 1.21.0). The v1 and v2 sources are beside them as `.v1` and `.v2`.
-- Build: in `build\builder`, `dotnet build -c Release -o bin`, then `bin\QolHudBuild.exe <out.asi> [<SCDA_Online.exe>]`. With an exe the static gate runs. The build is deterministic.
-- Harness: `build\harness` (x86), `dotnet build -c Release -o bin`, then `bin\QolHarness.exe <mode> <SCDA_Online.exe> <QolHud.asi>`.
-- All gates at once: `build\gates\run_v3.ps1 -MainExe <copy of main's exe> -PrevExe <copy of the d94c9137 exe> -Out <scratch>` (writes `build_v3.txt`, `harness_v3.txt`); the patch dry run: `build\gates\dryrun_v3.ps1 -Scratch <empty scratch dir>` (writes `dryrun_v3.txt`).
-
-# Proof without the game
-
-| Gate | Result | Log |
-| --- | --- | --- |
-| static gate, main exe `0f1b2d1c` | ALL PASS, 65 checks | `build\gates\build_v3.txt` |
-| static gate, previous main `d94c9137` | ALL PASS, 65 checks | same file |
-| determinism | 5 builds, one md5 `722365f7...` | same file |
-| harness, 16 modes on main's exe bytes and 16 on the previous build | 32 runs ALL PASS, 440 checks, 0 fail | `build\gates\harness_v3.txt` |
-| `patch.ps1` dry run on a scratch copy of main's `System` (67 files) | ALL PASS, 18 checks: apply adds one file equal to the stack; revert leaves 0 differences (md5, size, date); apply with settings and revert returns `Enhanced.ini` to its md5; a v2 build is recognised, refused for apply, removed by revert; the main path is refused in 5 spellings and main is not written | `build\gates\dryrun_v3.txt` |
-
-What the static gate shows, beyond v2's site A checks: the per-frame loop resets both lists and calls test(7) / test(mode) with the return addresses and registers the record relies on; every widget update ends in the list append `0x10B73D00`; the two lists are referenced in `.text` only by the render tail, the per-frame reset, the teardown, the registration, the append and the exit cleanup; `0x10B70E30` has one caller, which passes the viewport in `ebx`; `0x109F7250` is called only by the render tail, reads only the list's count itself and returns with `ret 8`; the engine's pre-HUD clear is `RI->Clear(0,colour,1,1.0,1,0)` on `[viewport+0x128]`; nothing branches into the 7 stolen bytes; an install changes 13 bytes, all inside the two sites; stub A leaves only by `ret 4` with the stack and `ebx`/`esi`/`edi`/`ebp` as on entry and writes only its own records; stub B leaves only to `0x10B70EDD` (entry stack) or `0x10B70E9F` (with the two stolen pushes), never writes `ebx`/`ebp`, calls only `0x109F7250` (4x) and the RI clear (1x), writes only its own data and the FOV slot, and swaps and restores the FOV around both E0 calls.
-
-What the harness shows: it maps the exe's own 64 KB around the HUD code at its own address, loads the real `QolHud.asi`, then (A-E, as v2) compares 3.7 million answers of the mode test with a model of the rule, and (F, new) runs the game's **real** per-frame loop `0x10B70EF0` and **real** render `0x10B70E30` on a fake HUD with the 28 merc widgets, whose updates append fake actors to the real list globals, with the render call `0x109F7250` and the RI clear replaced by recorders. For 13 HUD modes it compares every draw call, the actors it receives, the FOV during it, the clear's arguments, the engine lists afterwards (untouched) and the registers with a model: the stock order everywhere, the split exactly in the views with on-top live. Nine further cases: mode changed between loop and render, another HUD, a widget added, 1,100 actors in one list, mode 7 after a scope frame, a repeated render, normal play after a view: the render falls back to stock whenever the record does not match the lists. Modes: stock, default, nosection, reloc, disabled, noviews, droneonly, sniperonly, allviews, hide, reticle, ontopoff, under, foreign (site A altered: refused), foreignb (render tail altered: on-top part refused, the rest installed), foreignloop (loop body altered: the same).
-
-| Merc HUD of 28 widgets, defaults, harness F | Normal play | Drone view | Scope view |
+| Build | Input (replaced) | Output | Bytes |
 | --- | --- | --- | --- |
-| stock: widgets drawn | 18 | 3 | 2 |
-| v3: widgets drawn / of them on top of the overlay | 18 / 0 | 18 / 15 | 18 / 16 |
+| `hud-only\System\SCDA_Online.exe` (the feature alone) | CE 2026.10.11-3 SMOKE exe md5 `ceb13a00f2e48b52c6d7aeff93f3a29d` (sha256 `8cd78553`) | `5b3cda981d4ebd83e89f71b541e72fb3` | 249 (groups S1, S2, O) |
+| `m10-hud\System\SCDA_Online.exe` (the test build) | M3epbuggin m10 `M3CHAT` exe `039f3948a11b0ab0093bbf8787f9c941` (= `ceb13a00` + chat-list lean 18 B + dead-chat-gate 3 B) | `0e863bf75751c01f24f31299758386e1` | 250 (S1, S2, O + C) |
 
-# In-game test list (v3)
+Both builds twice, one md5 each. With the m10 exe goes m10's `Packages\_Common\StaticMeshes\Interface_stm.usx` `91c890cd` (unchanged here).
 
-Install with `.\patch.ps1 -GameDir "<game folder>" -Apply` (game closed), reset with `-Revert`. Run `test\hud-state.ps1 -Watch 120` in a second window during steps 3 to 6: it prints the mode, the on-top counters and one row per widget, the lifted ones as `SHOWN, ON TOP`.
+## Rows that differ from `..\README.md`
 
-1. Start the game. `System\QolHud.log` reads `QolHud 3: installed at 0x10B73C90, Drone=1 Sniper=1 Binocular=0 StickyCam=0 Reticle=0 OnTop=1 ...; on top: installed at 0x10B70E98`.
-2. Play a merc in a versus match. Normal play looks as before (the probe: `frames drawn split` does not grow).
-3. Raise the scope. The scope overlay is there, and the zone name, the radar, the round timer, the score top right, the gadget strip and the merc displays are drawn **over** the scope's mask, at full brightness, not darkened. The probe: `frames drawn split` grows every frame, `frames with a lifted widget drawn stock` stays 0, the lifted rows read `SHOWN, ON TOP`. Screenshot to compare with `test\results\upsilon-2\SCOPE-full_140816_728.jpg`.
-4. Leave the scope. The HUD is as in step 2, nothing doubled or left over.
-5. Launch the drone outside the merc base and fly it. The drone frame's brackets are there, and the zone name, radar and top-right score are drawn over them (compare `DRONE-resp_141804_047.jpg`). Leave the drone by the key and by letting it explode: the HUD is as in step 2.
-6. Look for anything wrong about depth inside the lifted part: the radar's 3D objects and the gadget cubes look as in normal play.
-7. Die while in the scope and while flying the drone; the kill cam and the end of the match appear as in the stock game.
-8. `OnTop=0` (by `-Settings "OnTop=0"`): the log ends `; on top: off (OnTop=0), 0x10B70E98 untouched`, and the views look as with v2.
-9. Optional: `SniperUnder=12` puts the score back under the scope mask; `Binocular=1`, `StickyCam=1` as a spy; `Reticle=1` as a merc.
-10. Optional, together with the bomb or hack objective only on the operator's order (rule 11: one deployment at a time): their timers stay visible in both views.
+| # | Site | Stock | 10.07-1 lean | 10.11-3 lean |
+| --- | --- | --- | --- | --- |
+| 18 | VA `0x10F93430`, file `0x693430`: scope overlay [21] vtable slot `+0x1C` | `50 5E B9 10` (`0x10B95E50`) | `90 EE E2 10` (`0x10E2EE90`) | `40 EC E2 10` (`0x10E2EC40`, WS) |
+| 19 | VA `0x10F92EF4`, file `0x692EF4`: drone overlay [22] vtable slot `+0x1C` | `20 B7 B7 10` (`0x10B7B720`) | `97 EE E2 10` (`0x10E2EE97`) | `47 EC E2 10` (`0x10E2EC47`, WD) |
+| 21 | cave W, 45 B | zero | VA `0x10E2EE90..0x10E2EEBC`, file `0x52EE90` | VA `0x10E2EC40..0x10E2EC6C`, file `0x52EC40`; the same 45 bytes (`BA505EB910EB05BA20B7B710A1E4150411A3F0EF0611FF742408FF742408FFD2A1E4150411A3F4EF0611C20800`) |
+| C (m10 build only) | VA `0x10B816A8`, file `0x2816A8`: widget 18 (chat) mode mask, ctor `0x10B81650` | `02` (modes 1, 11) | not in lean (open question 1) | `3B` (dead-chat-gate's `33` + mode 3): the chat also shows in the drone and, by row 16, the scope, as v3 showed it |
 
-# Verified and inferred
+Rows 1-17 and 20 (cave T + RR at `0x10E2EB80..0x10E2EC2B`, file `0x52EB80`) and the `.data` slack A/B `0x1106EFF0..0x1106EFF7`: byte for byte as `..\README.md`.
 
-| Claim | State |
+## Checks (`check-1011.txt`, ALL PASS)
+
+| Check | Result |
 | --- | --- |
-| the widget rule, the mode byte, the mode setter, the three loops | VERIFIED (disassembly) |
-| drone = mode 3, merc scope = mode 9, spy binocular = mode 8, sticky cam = mode 2 | VERIFIED (each class's start virtual), and measured in game (runs 1 and 2) |
-| the scope overlay, drone overlay and gun reticle are the widgets named; live indices 21 / 22 / 23 | VERIFIED (the meshes each one loads); indices measured in game (run 1) |
-| the HUD meshes are drawn from the two actor lists, rebuilt every frame in widget-array order, drawn in list order; texts after them | VERIFIED (disassembly; the harness runs the real loop and render) |
-| the overlay covers the kept widgets because it is appended later | VERIFIED by the draw order; measured effect in game (v2 screenshots) |
-| the engine clears depth and stencil before the HUD with `RI->Clear(0,0,1,1.0,1,0)` | VERIFIED (disassembly) |
-| `[viewport+0x68]` (the HUD the render uses) is the same object as `PlayerController+0x95C` (the HUD the loop runs) | INFERRED (both carry the HUD camera node at `+0x428`); if not, stub B always takes the stock path (counted in `frames with a lifted widget drawn stock`) |
-| the split draws the lifted widgets on top in the game | INFERRED; the first thing the test shows |
-| a depth clear in the middle of the HUD has no other visible effect (stencil, render target) | INFERRED (the same call the engine makes before the HUD) |
-| the lists hold fewer than 1,024 actors each in a real match | INFERRED; above that the frame is drawn stock and counted |
-| the timers of `spy-bomb-objective` and `spy-hack-terminal` cannot be covered by any view | VERIFIED from their sources: `IDirect3DDevice9::ColorFill` on the backbuffer inside `UD3DRenderDevice::Present` (`0x109089AF`, `0x10908A10` / `0x10908A27`), after the frame is complete; values from the local level's objects and the local PRI, no HUD-mode or view-target gate. Not measured in game |
-| players with and without the plugin can share a match | INFERRED from the stubs writing no game state |
+| stock bytes | every HUD site holds the same stock bytes in 10.07-1 and 10.11-3; the builder refuses any other |
+| byte diff | hud-only vs 10.11-3: 249 B = the 10.07-1 lean bytes with W moved; m10-hud vs m10: 250 B; m10-hud vs 10.11-3: chat 21 + HUD 249, C on the shared byte |
+| caves | `0x10E2EB80..0x10E2EC9F` zero in 10.11-3; T + W end 52 zero bytes before 10.11-3's code at `0x10E2ECA0`; no absolute dword or rel32 branch in the 10.11-3 exe or its 8 plugins points into `0x10E2EB70..0x10E2EC9F`; the one exe dword in the `.data` slack (`0x1106EE3E` at file `0x558FB7`) is float table data, there in 10.07-1 too |
+| 10.11-3 changes | nearest to a HUD code site 51,759 B |
+| chat bytes | disjoint, nearest 1,223 B |
+| 10.11-3 plugins (`Enhanced`, `MatchRec`, `Modes`, `ObjHack`, `ProxVoice`, `RollFix`, `SpawnProt`, `VentChain` as in `C:\Dash\SCDA M3epbuggin\System`) | no image dword within 16 B of a HUD byte or A/B; nearest `Enhanced.asi` `0x10B70F08`, 106 B |
 
-# Open points
-
-- The gun reticle stays hidden in both views by default; `Reticle=1` brings it back (then on top).
-- The spy views (`Binocular`, `StickyCam`) were not ordered; they are in the plugin switched off.
-- The interaction prompts (index 5) are shown in the views by the stock game and keep their stock place; if their icons sit under the overlay badly, that is stock behaviour (say so and they can be lifted too).
-- A change of the shipped `HudParams.ini` was not needed and not made.
-
-# Test log
-
-| # | Date | Build | Result |
-| --- | --- | --- | --- |
-| 1 | 2026-09-29 09:49 to 10:04, automated run (test loop, unattended), working copy equal to main (exe `0f1b2d1c`), defaults, no `[QOLHUD]` section, host alone on Blackwing | v2 `2df8cf20` | PASS for the two ordered views; evidence in `test\results\` (`hud-state` dumps, mode watch, screenshots) |
-| 2 | 2026-09-29 14:04 to 14:19, operator's order (host as Upsilon, screenshots of scope and drone), same install and defaults, host alone on Blackwing | v2 `2df8cf20` | PASS: scope mode 9 draws 20 widgets (3 by the stock rule); drone mode 3 with radar, round timer, markers and gadget icon kept. Evidence `test\results\upsilon-2\` (`SCOPE-full_140816_728.jpg`, `DRONE-resp_141804_047.jpg`, lobby frames, mode watch, `QolHud.log`). Operator's verdict after the screenshots: the score top right and the kept HUD must be drawn above the scope and drone overlays -> v3 |
-| 3 | 2026-09-29 from 19:34, operator's hand test (order "load the following features ... the HUD overlay for drone and snipe for testing"), working copy equal to main (exe `0f1b2d1c`) plus `QolHud.asi` only, defaults (no `[QOLHUD]` section), host alone on Blackwing as merc (launch replay `trace_blackwing_launch.jsonl`, speed 0.6, in match after 63 s) | v3 `722365f7` | `QolHud.log`: "QolHud 3: installed at 0x10B73C90 ... OnTop=1 ...; on top: installed at 0x10B70E98". Operator's verdict, word for word: "ok, Merc hud worked well". Launch output `test\results\run3-hand\` |
-
-| Test list # (v2) | Result | Measured |
-| --- | --- | --- |
-| 1 log | PASS | `QolHud 2: installed at 0x10B73C90, Drone=1 Sniper=1 Binocular=0 StickyCam=0 Reticle=0`, all hide lists 0; site `E9 52 D4 B8 5D 90`, plugin at its preferred base `0x6E700000` |
-| 2 merc, normal play | PASS | mode 1: 28 widgets, 20 shown by the stock rule, 20 with the plugin |
-| 3 scope | PASS | right mouse button: mode 1 -> 9, remote cam `BinocularMercRemoteCam`; 3 widgets by the stock rule, 20 with the plugin; on screen: zone name, radar, round timer, gadget strip, the scope overlay; the gun reticle is not drawn. The widgets outside the scope circle are darkened by the scope's own mask; the radar reaches into the left edge of the circle (`results\merc-scope\`): placement is the operator's call |
-| 4 leave the scope | PASS | mode 9 -> 1, 20 of 20 as before |
-| 5 drone | PASS, short | gadget key: mode 1 -> 3, remote cam `Drone`; 4 widgets by the stock rule, 20 with the plugin; radar, round timer and gadget strip on screen with the drone overlay (`results\merc-c-3\`). The drone was launched in the merc base ("Restricted area! Drone jammed!") and ended after 2.2 s: mode 3 -> 1, 20 of 20. A free flight and the exit by key were NOT run. At the spawn point itself the gadget key launched nothing (4 presses) |
-| 6 widget index | SETTLED | the live index is the array order as printed by `hud-state.ps1`: merc HUD 28 widgets (scope overlay 21, drone overlay 22, gun reticle 23, grenade display 25, detection display 26), spy HUD 24 widgets (binocular overlay 21); the dumps are `results\merc-normal\hud-state.txt` and `results\spy-normal\hud-state.txt` |
-| 7 hide lists | not run | - |
-| 8 death, kill cam | PASS in normal play | death by the own frag: mode 1 -> 0 (1 widget) -> 4 kill cam (2 widgets), the same counts by the stock rule and with the plugin; after the kill cam mode 1, 20 of 20. Death INSIDE a view and the end of the match were NOT run |
-| 9 spy | PASS | mode 1: 24 widgets, 18 by the stock rule, 18 with the plugin; the spy's views were not entered |
-| 10 options | not run | - |
-
-Test tools added by the run: `test\view-test.ps1` (mode watch and screenshots while keys are sent), `_tools\game-probe\launch-match.ps1` with `_tools\input-trace\traces\trace_blackwing_launch_merc.jsonl` (host as merc), `_tools\game-probe\shot-loop.ps1`.
-
-Run 2 (operator's screenshots):
-
-| Step | Result | Measured |
-| --- | --- | --- |
-| lobby, one Right | focus on the first Upsilon slot; Enter there: "There is no action available" | the side is changed by the lobby item Switch Team (Right, Right, Down, Enter), then Up, Enter launches; the player shows in the Upsilon column before the launch (`lobby-switched_*.png`) |
-| scope | PASS | first zoom press (right mouse button): mode 1 -> 9, `BinocularMercRemoteCam`, x2.0; 3 widgets by the stock rule, 20 with the plugin (`SCOPE-full_140816_728.jpg`) |
-| two more zoom presses | the zoom key toggles | press 2: 9 -> 1, press 3: 1 -> 9, press 4: 9 -> 1 |
-| drone | PASS, short | gadget key C (the operator's profile binds `UseGadgetMerc` to C, `CrouchMerc` to Ctrl): no drone in the first life (12 presses over 4 min, no `Drone` actor); after a death by the own frag and a respawn the first press gave mode 1 -> 3, remote cam `Drone`, back to 1 within 3 s (jammed in Upsilon H.Q.) (`DRONE-resp_141804_047.jpg`) |
-| drone placement | for the operator | the drone frame's left bracket covers the zone name and part of the radar |
-| reset | done | `-Revert`, boot step 6: 0 content differences |
